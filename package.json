@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "boilerplate",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "rm -rf logs && cross-env NODE_ENV=development nodemon -r tsconfig-paths/register --exec ts-node ./src/index.ts --files",
+    "dev-test-env": "rm -rf logs && cross-env NODE_ENV=test nodemon -r tsconfig-paths/register --exec ts-node ./src/index.ts --files",
     "start": "cross-env NODE_ENV=production node ./build/src/index.js",
     "build": "rimraf ./build && tsc && tsc-alias",
     "lint": "eslint ./src/**/*.ts --fix",
@@ -27,6 +28,8 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
     "micro-library-ai": "^1.1.45",
+    "mongodb": "^6.13.1",
+    "mongodb-memory-server": "^10.1.4",
     "request-ip": "^3.3.0"
   },
   "devDependencies": {

@@ -7,4 +7,7 @@ export const envs = {
   NODE_ENV: get('NODE_ENV').default('development').asString(),
   PLATFORM: get('PLATFORM').required().asString(),
   API_KEY: get('API_KEY').required().asString(),
+  MONGO_USER: get('MONGO_USER').required().asString(),
+  MONGO_PASSWORD: get('MONGO_PASSWORD').required().asString(),
+  MONGO_URL: get('MONGO_URL').required().asString(),
 };

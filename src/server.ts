@@ -12,6 +12,7 @@ interface ServerOptions {
   apiPrefix: string;
   platform: string;
   routes: Router;
+  nodeEnv: string;
 }
 
 const loggerMiddleware = new LoggerMiddleware(makeUUID);
@@ -22,13 +23,15 @@ export class Server {
   private readonly platform: string;
   private readonly routes: Router;
   private readonly apiPrefix: string;
+  private readonly nodeEnv: string;
 
   constructor(options: ServerOptions) {
-    const { port, platform, routes, apiPrefix } = options;
+    const { port, platform, routes, apiPrefix, nodeEnv } = options;
     this.port = port;
     this.platform = platform;
     this.routes = routes;
     this.apiPrefix = apiPrefix;
+    this.nodeEnv = nodeEnv;
   }
 
   async start(): Promise<void> {
@@ -50,7 +53,7 @@ export class Server {
     this.app.use(ExceptionMiddleware);
 
     this.app.listen(this.port, () => {
-      console.log(`Server running on port ${this.port}...`);
+      console.log(`Server running on port ${this.port}... Platform: ${this.platform}.... Environment: ${this.nodeEnv}...`);
     });
   }
 }

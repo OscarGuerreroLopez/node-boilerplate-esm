@@ -9,6 +9,7 @@ const main = (): void => {
     apiPrefix: envs.API_PREFIX,
     platform: envs.PLATFORM,
     routes: AppRoutes.routes,
+    nodeEnv: envs.NODE_ENV,
   });
   void server.start();
 };
