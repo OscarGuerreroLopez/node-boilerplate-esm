@@ -1,8 +1,9 @@
 import { envs } from '@/core/config/env';
 import { logger } from '@/core/shared/logger';
+import { type MongoDatabase } from '@/core/types/database';
 import { type Db, MongoClient, type MongoClientOptions } from 'mongodb';
 
-export const LiveConnection = (() => {
+export const LiveConnection = ((): MongoDatabase => {
   let mongoClient: MongoClient;
   let db: Db;
 
@@ -56,7 +57,7 @@ export const LiveConnection = (() => {
         await createConnection();
       }
 
-      return true;
+      return db.databaseName;
     },
     closeConnection: async () => {
       if (mongoClient != null) {
@@ -68,6 +69,13 @@ export const LiveConnection = (() => {
           code: '',
         });
       }
+    },
+    getClient: async () => {
+      if (mongoClient != null) {
+        return mongoClient;
+      }
+
+      throw new Error('mongoClient is not defined');
     },
   };
 })();

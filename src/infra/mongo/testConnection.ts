@@ -1,8 +1,9 @@
 import { logger } from '@/core/shared/logger';
+import { type MongoDatabase } from '@/core/types/database';
 import { type Db, MongoClient, MongoServerError } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
-export const TestConnection = (() => {
+export const TestConnection = ((): MongoDatabase => {
   let mongoClient: MongoClient;
   let db: Db;
 
@@ -63,7 +64,7 @@ export const TestConnection = (() => {
         await createConnection();
       }
 
-      return true;
+      return db.databaseName;
     },
     getCollection: async (collectionName: string) => {
       if (db == null) {
