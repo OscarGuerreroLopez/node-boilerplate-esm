@@ -11,11 +11,11 @@
   "scripts": {
     "dev": "rm -rf logs && cross-env NODE_ENV=development nodemon -r tsconfig-paths/register --exec ts-node ./src/index.ts --files",
     "dev-test-env": "rm -rf logs && cross-env NODE_ENV=test nodemon -r tsconfig-paths/register --exec ts-node ./src/index.ts --files",
-    "start": "cross-env NODE_ENV=production node ./build/src/index.js",
-    "build": "rimraf ./build && tsc && tsc-alias",
+    "start": "cross-env NODE_ENV=production node ./dist/src/index.js",
+    "build": "rimraf ./dist && tsc && tsc-alias",
     "lint": "eslint ./src/**/*.ts --fix",
     "format": "prettier --write ./**/*.{ts,json}",
-    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false --testPathPattern=src/__tests__ --testPathIgnorePatterns=build"
+    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false --testPathPattern=src/__tests__ --testPathIgnorePatterns=dist"
   },
   "keywords": [],
   "author": "",
