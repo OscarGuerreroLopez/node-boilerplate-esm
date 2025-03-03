@@ -1,19 +1,10 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+import app from './app';
 import { envs } from './core/config/env';
-import { AppRoutes } from './myapp/presentation/routes';
 
-import { Server } from './server';
-
-const main = (): void => {
-  const server = new Server({
-    port: envs.PORT,
-    apiPrefix: `/${envs.SERVICE_NAME}/${envs.API_PREFIX}`,
-    platform: envs.PLATFORM,
-    routes: AppRoutes.routes,
-    nodeEnv: envs.NODE_ENV,
-  });
-  void server.start();
-};
-
-(() => {
-  main();
-})();
+const port = envs.PORT !== 0 ? envs.PORT : 3001;
+app.listen(port, () => {
+  /* eslint-disable no-console */
+  console.log(`Server running on port ${port}... Platform: ${envs.PLATFORM}.... Environment: ${envs.NODE_ENV}...`);
+  /* eslint-enable no-console */
+});
