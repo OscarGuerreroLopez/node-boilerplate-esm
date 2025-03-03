@@ -1,8 +1,8 @@
 import { type Response, type NextFunction } from 'express';
-import { HttpCode, type ErrorResponse, type ValidationType } from 'micro-library-ai';
 import { logger } from '../logger';
 import { type CustomRequest } from '@/core/types/express-request';
 import { AppError, WarnError } from '@/core/errors';
+import { type ErrorResponse, type ValidationType, HttpCode } from '@/core/types/http';
 
 interface HandleErrorParams {
   res: Response<ErrorResponse>;

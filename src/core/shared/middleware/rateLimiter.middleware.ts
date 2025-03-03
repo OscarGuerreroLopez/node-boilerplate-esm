@@ -1,6 +1,6 @@
 import { type Express } from 'express';
 import rateLimit from 'express-rate-limit';
-import { FIVE, ONE_THOUSAND, SIXTY } from 'micro-library-ai';
+import { FIVE, ONE_THOUSAND, SIXTY } from '@/core/types/constants';
 
 export const expressRateLimiter = (app: Express): void => {
   // use better rate limiter middleware

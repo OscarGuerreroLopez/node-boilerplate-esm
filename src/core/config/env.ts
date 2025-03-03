@@ -10,4 +10,5 @@ export const envs = {
   MONGO_USER: get('MONGO_USER').required().asString(),
   MONGO_PASSWORD: get('MONGO_PASSWORD').required().asString(),
   MONGO_URL: get('MONGO_URL').required().asString(),
+  SERVICE_NAME: get('SERVICE_NAME').required().asString(),
 };

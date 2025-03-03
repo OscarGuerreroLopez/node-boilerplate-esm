@@ -1,9 +1,9 @@
 import { type Response, type NextFunction } from 'express';
 import { logger } from '../logger';
-import { type ErrorResponse } from 'micro-library-ai';
 import { type CustomRequest } from '@/core/types/express-request';
 import { envs } from '@/core/config/env';
 import { AppError } from '@/core/errors';
+import { type ErrorResponse } from '@/core/types/http';
 
 export const credentialsMiddleware = (req: CustomRequest, _res: Response<ErrorResponse>, next: NextFunction): void => {
   const apiKey = req.headers['x-api-key'] as string;

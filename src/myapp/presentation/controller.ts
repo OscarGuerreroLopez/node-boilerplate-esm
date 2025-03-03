@@ -1,18 +1,15 @@
 import { envs } from '@/core/config/env';
 import { type CustomRequest } from '@/core/types/express-request';
 import { type NextFunction, type Response } from 'express';
-import { type SuccessResponse, type MetaResponseDto } from 'micro-library-ai';
 import { checkMongoDatabase } from '../services';
+import { type MetaResponseDto, type SuccessResponse } from '@/core/dtos/response.dto';
 
 export class MyAppController {
-  public getMeta = async (
-    req: CustomRequest,
-    res: Response<SuccessResponse<MetaResponseDto & { dbName: string }>>,
-    next: NextFunction,
-  ): Promise<void> => {
+  public getMeta = (req: CustomRequest, res: Response<SuccessResponse<MetaResponseDto>>, next: NextFunction): void => {
     checkMongoDatabase()
       .then((result) => {
         res.json({
+          serviceName: envs.SERVICE_NAME,
           data: {
             message: 'OK',
             code: req.code ?? 'noCode',
