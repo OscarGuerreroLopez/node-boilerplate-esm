@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: ${PORT}
+      DEFAULT_API_PREFIX: ${DEFAULT_API_PREFIX}
+      NODE_ENV: ${NODE_ENV}
+      PLATFORM: ${PLATFORM}
+    volumes:
+      - .:/src/app
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
