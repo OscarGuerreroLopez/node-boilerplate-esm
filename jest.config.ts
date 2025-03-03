@@ -15,6 +15,8 @@ const config: JestConfigWithTsJest = {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '@/(.*)': ['<rootDir>/src/$1'],
   },
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
 };
 
 export default config;
