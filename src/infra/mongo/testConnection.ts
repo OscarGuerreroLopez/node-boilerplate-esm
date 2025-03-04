@@ -1,4 +1,4 @@
-import { logger } from '@/core/shared/logger';
+import { logger } from '@/shared/logger';
 import { type MongoDatabase } from '@/core/types/database';
 import { type Db, MongoClient, MongoServerError } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
