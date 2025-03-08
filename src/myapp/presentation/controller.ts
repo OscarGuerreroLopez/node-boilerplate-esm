@@ -5,6 +5,7 @@ import { checkMongoDatabase } from '../services';
 import { type MetaResponseDto, type SuccessResponse } from '@/core/dtos/response.dto';
 import { type User } from '@/core/types/user';
 import { AddUserDto } from '@/core/dtos/addUser.dto';
+import { UserResponseDto } from '@/core/dtos/addUserResponse.dto';
 
 export class MyAppController {
   public getMeta = (req: CustomRequest, res: Response<SuccessResponse<MetaResponseDto>>, next: NextFunction): void => {
@@ -24,14 +25,16 @@ export class MyAppController {
       .catch(next);
   };
 
-  public addUser = (req: CustomRequest, res: Response<SuccessResponse<unknown>>, next: NextFunction): void => {
+  public addUser = (req: CustomRequest, res: Response<SuccessResponse<UserResponseDto & { code: string }>>, next: NextFunction): void => {
     const { code } = req as { code: string };
 
     const dto = AddUserDto.create(req.body as User);
 
+    const userResponse = UserResponseDto.create(dto);
+
     res.json({
       serviceName: envs.SERVICE_NAME,
-      data: { dto, code },
+      data: { ...userResponse, code },
     });
   };
 }
