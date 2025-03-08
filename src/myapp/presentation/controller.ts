@@ -27,8 +27,14 @@ export class MyAppController {
   };
 
   public addUser = (req: CustomRequest, res: Response<SuccessResponse<UserResponseDto & { code: string }>>, next: NextFunction): void => {
-    const { code } = req as { code: string };
+    const { code } = req;
+
     const dto = AddUserDto.create(req.body as User);
+
+    if (code == null) {
+      next(new Error('Code is required'));
+      return;
+    }
 
     addUserUsecase({ user: dto, code })
       .then((result) => {

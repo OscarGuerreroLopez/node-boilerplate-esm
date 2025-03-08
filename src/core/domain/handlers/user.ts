@@ -6,24 +6,6 @@ import { UserRegisteredEvent } from '../events/user-register.event';
 DomainAsyncEventDispatcher.register(UserRegisteredEvent, async (event) => {
   const result = await new Promise((resolve, reject) =>
     setTimeout(() => {
-      if (event.email === 'dummy@dummy.com') {
-        reject(new Error('email cannot be "dummy"'));
-      } else {
-        resolve(`Result for ${event.email} all good`);
-      }
-    }, 200),
-  );
-
-  logger.info(JSON.stringify(result), {
-    file: 'src/core/domain/handlers/user.ts',
-    service: 'playground',
-    code: '',
-  });
-});
-
-DomainAsyncEventDispatcher.register(UserRegisteredEvent, async (event) => {
-  const result = await new Promise((resolve, reject) =>
-    setTimeout(() => {
       if (event.name === 'dummy') {
         reject(new Error('Name cannot be "dummy"'));
       } else {
