@@ -11,7 +11,7 @@ DomainAsyncEventDispatcher.register(UserRegisteredEvent, async (event) => {
       } else {
         resolve(`Result for ${event.email} all good`);
       }
-    }, 100),
+    }, 200),
   );
 
   logger.info(JSON.stringify(result), {
@@ -29,7 +29,7 @@ DomainAsyncEventDispatcher.register(UserRegisteredEvent, async (event) => {
       } else {
         resolve(`Result for ${event.name} all good`);
       }
-    }, 100),
+    }, 200),
   );
 
   logger.info(JSON.stringify(result), {
@@ -65,6 +65,6 @@ const dummyAsync = async (event: UserRegisteredEvent): Promise<string> => {
       } else {
         resolve(`email ${event.email} all good`);
       }
-    }, 100),
+    }, 200),
   );
 };

@@ -10,7 +10,7 @@ DomainAsyncEventDispatcher.register(AddAddressEvent, async (event) => {
       } else {
         resolve(`Result for ${event.city} all good`);
       }
-    }, 100),
+    }, 200),
   );
 
   logger.info(JSON.stringify(result), {

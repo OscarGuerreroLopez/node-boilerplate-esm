@@ -19,7 +19,7 @@ export const LiveConnection = ((): MongoDatabase => {
 
       mongoClient = new MongoClient(uri, options);
       await mongoClient.connect();
-      db = mongoClient.db('micro');
+      db = mongoClient.db(envs.MONGO_DATABASE);
 
       logger.info('test Live DB activated', {
         service: 'boilerplate',

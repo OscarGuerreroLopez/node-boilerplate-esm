@@ -1,5 +1,6 @@
 import { v4 as uuidv4, validate as isValidUUID } from 'uuid';
 import { type DomainEvent } from '../events/domain.event';
+import { type User } from '@/core/types/user';
 
 export abstract class Entity<T> {
   readonly entityId: string;
@@ -37,12 +38,10 @@ export abstract class Entity<T> {
     return Object.freeze({ ...this.props });
   }
 
-  public toJSON(): Record<string, unknown> {
+  public toJSON(): User & { entityId: string } {
     return {
       entityId: this.entityId,
-      ...Object.fromEntries(
-        Object.entries(this.props).map(([key, value]) => [key, value instanceof Object && 'value' in value ? value.value : value]),
-      ),
+      ...(this.props as unknown as User),
     };
   }
 }

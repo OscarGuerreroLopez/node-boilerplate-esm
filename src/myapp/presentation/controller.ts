@@ -6,6 +6,7 @@ import { type MetaResponseDto, type SuccessResponse } from '@/core/dtos/response
 import { type User } from '@/core/types/user';
 import { AddUserDto } from '@/core/dtos/addUser.dto';
 import { UserResponseDto } from '@/core/dtos/addUserResponse.dto';
+import { addUserUsecase } from '../usecases';
 
 export class MyAppController {
   public getMeta = (req: CustomRequest, res: Response<SuccessResponse<MetaResponseDto>>, next: NextFunction): void => {
@@ -27,14 +28,15 @@ export class MyAppController {
 
   public addUser = (req: CustomRequest, res: Response<SuccessResponse<UserResponseDto & { code: string }>>, next: NextFunction): void => {
     const { code } = req as { code: string };
-
     const dto = AddUserDto.create(req.body as User);
 
-    const userResponse = UserResponseDto.create(dto);
-
-    res.json({
-      serviceName: envs.SERVICE_NAME,
-      data: { ...userResponse, code },
-    });
+    addUserUsecase({ user: dto, code })
+      .then((result) => {
+        res.json({
+          serviceName: envs.SERVICE_NAME,
+          data: { ...UserResponseDto.create(dto), code },
+        });
+      })
+      .catch(next);
   };
 }
