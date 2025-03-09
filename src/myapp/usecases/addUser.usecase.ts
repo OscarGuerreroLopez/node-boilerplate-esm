@@ -6,7 +6,7 @@ import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
 
-export const makeAddUserUsecase: MakeAddUser = () => {
+export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
       const userEntity = UserEntity.create(user);
@@ -31,8 +31,7 @@ export const makeAddUserUsecase: MakeAddUser = () => {
         }
       }
 
-      const result = {
-        id: userEntity.getId().value,
+      const result = await userRepository.addUser({
         email: userEntity.getEmail().value,
         name: userEntity.getName().value,
         addresses: userEntity.getAddresses().map((address) => ({
@@ -40,11 +39,20 @@ export const makeAddUserUsecase: MakeAddUser = () => {
           city: address.getCity().value,
           country: address.getCountry().value,
         })),
-      };
+      });
 
       userEntity.clearDomainEvents();
 
-      return result;
+      return {
+        id: result.getId().value,
+        email: result.getEmail().value,
+        name: result.getName().value,
+        addresses: result.getAddresses().map((address) => ({
+          street: address.getStreet().value,
+          city: address.getCity().value,
+          country: address.getCountry().value,
+        })),
+      };
     } catch (error) {
       logger.error(error instanceof Error ? error.message : JSON.stringify(error), {
         file: 'src/myapp/usecases/addUser.usecase.ts',
