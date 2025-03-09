@@ -38,7 +38,7 @@ export abstract class BaseRepository<T> {
     return result ?? null;
   }
 
-  protected async insert(item: Partial<T>): Promise<NonNullable<T> | null> {
+  protected async insert(item: Partial<T>): Promise<NonNullable<T>> {
     await this.initializeCollection();
 
     item = { ...item, createdAt: new Date(), updatedAt: new Date() };
@@ -49,7 +49,11 @@ export abstract class BaseRepository<T> {
       _id: result.insertedId,
     })) as T;
 
-    return insertedDocument ?? null;
+    if (insertedDocument == null) {
+      throw new Error('Inserted document not found');
+    }
+
+    return insertedDocument;
   }
 
   protected async deleteOne(where: Partial<T>): Promise<boolean> {
