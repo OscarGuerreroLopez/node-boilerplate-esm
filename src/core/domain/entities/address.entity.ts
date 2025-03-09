@@ -23,4 +23,16 @@ export class AddressEntity extends Entity<AddressProps> {
     address.addDomainEvent(new AddAddressEvent(address.entityId, cityVo.value, countryVo.value, streetVo.value));
     return address;
   }
+
+  public getStreet(): AddressVo {
+    return this.props.street;
+  }
+
+  public getCity(): AddressVo {
+    return this.props.city;
+  }
+
+  public getCountry(): AddressVo {
+    return this.props.country;
+  }
 }

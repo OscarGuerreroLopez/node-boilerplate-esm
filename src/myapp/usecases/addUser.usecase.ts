@@ -9,13 +9,12 @@ import { logger } from '@/shared/logger';
 export const makeAddUserUsecase: MakeAddUser = () => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
-      const { email, name, addresses } = user;
-      const userEntity = UserEntity.create(email, name);
+      const userEntity = UserEntity.create(user);
       const userEvents = userEntity.getDomainEvents();
 
       const addressEvents = [];
 
-      for (const address of addresses) {
+      for (const address of user.addresses) {
         const addressEntity = AddressEntity.create(address.street, address.city, address.country);
         userEntity.addAddress(addressEntity);
         addressEvents.push(addressEntity.getDomainEvents());
@@ -32,7 +31,16 @@ export const makeAddUserUsecase: MakeAddUser = () => {
         }
       }
 
-      const result = userEntity.toJSON();
+      const result = {
+        id: userEntity.getId().value,
+        email: userEntity.getEmail().value,
+        name: userEntity.getName().value,
+        addresses: userEntity.getAddresses().map((address) => ({
+          street: address.getStreet().value,
+          city: address.getCity().value,
+          country: address.getCountry().value,
+        })),
+      };
 
       userEntity.clearDomainEvents();
 

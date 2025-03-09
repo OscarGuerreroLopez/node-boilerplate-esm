@@ -40,7 +40,7 @@ export class MyAppController {
       .then((result) => {
         res.json({
           serviceName: envs.SERVICE_NAME,
-          data: { ...UserResponseDto.create(dto), code },
+          data: { ...UserResponseDto.create(result), code },
         });
       })
       .catch(next);

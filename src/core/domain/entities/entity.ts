@@ -1,6 +1,5 @@
 import { v4 as uuidv4, validate as isValidUUID } from 'uuid';
 import { type DomainEvent } from '../events/domain.event';
-import { type User } from '@/core/types/user';
 
 export abstract class Entity<T> {
   readonly entityId: string;
@@ -38,10 +37,23 @@ export abstract class Entity<T> {
     return Object.freeze({ ...this.props });
   }
 
-  public toJSON(): User & { entityId: string } {
+  public toJSON(): T {
+    const serializeValue = (value: unknown): unknown => {
+      if (Array.isArray(value)) {
+        return value.map((item) => serializeValue(item));
+      }
+      if (value instanceof Entity) {
+        return value.toJSON();
+      }
+      if (value instanceof Object && 'value' in value) {
+        return value.value;
+      }
+      return value;
+    };
+
     return {
       entityId: this.entityId,
-      ...(this.props as unknown as User),
-    };
+      ...Object.fromEntries(Object.entries(this.props).map(([key, value]) => [key, serializeValue(value)])),
+    } as unknown as T;
   }
 }
