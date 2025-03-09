@@ -8,6 +8,7 @@ export const AppRoutes = {
     const controller = new MyAppController();
 
     router.get('/meta', controller.getMeta);
+    router.post('/add-user', controller.addUser);
 
     return router;
   },
