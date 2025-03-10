@@ -46,7 +46,7 @@ const fakeEmailCheckerService = async (event: UserRegisteredEvent): Promise<stri
       } else {
         resolve(`[USER HANDLER] Result for email ${event.email} all good`);
       }
-    }, 200),
+    }, 3000),
   );
 };
 
@@ -58,6 +58,6 @@ const fakeKYCService = async (event: UserRegisteredEvent): Promise<string> => {
       } else {
         resolve(`[USER HANDLER] Result for name ${event.name} all good`);
       }
-    }, 200),
+    }, 5000),
   );
 };
