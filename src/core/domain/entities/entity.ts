@@ -2,15 +2,15 @@ import { v4 as uuidv4, validate as isValidUUID } from 'uuid';
 import { type DomainEvent } from '../events/domain.event';
 
 export abstract class Entity<T> {
-  readonly entityId: string;
+  readonly aggregateId: string;
   protected readonly props: Readonly<T>;
   private domainEvents: DomainEvent[] = [];
 
-  constructor(props: T, entityId?: string) {
-    if (entityId != null && !isValidUUID(entityId)) {
+  constructor(props: T, aggregateId?: string) {
+    if (aggregateId != null && !isValidUUID(aggregateId)) {
       throw new Error('Invalid entity ID format');
     }
-    this.entityId = entityId ?? uuidv4();
+    this.aggregateId = aggregateId ?? uuidv4();
     this.props = Object.freeze(props); // Ensure immutability
   }
 
@@ -30,7 +30,7 @@ export abstract class Entity<T> {
   }
 
   public equals(object?: Entity<T>): boolean {
-    return object instanceof Entity && this.entityId === object.entityId;
+    return object instanceof Entity && this.aggregateId === object.aggregateId;
   }
 
   public getProps(): Readonly<T> {

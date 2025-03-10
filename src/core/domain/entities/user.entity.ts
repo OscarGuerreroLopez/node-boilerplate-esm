@@ -14,8 +14,8 @@ interface UserProps {
 }
 
 export class UserEntity extends Entity<UserProps> {
-  private constructor(props: UserProps, entityId?: string) {
-    super(props, entityId);
+  private constructor(props: UserProps, aggregateId?: string) {
+    super(props, aggregateId);
   }
 
   /** 📌 Factory method to create a new user */
@@ -26,7 +26,7 @@ export class UserEntity extends Entity<UserProps> {
     const user = new UserEntity({ email: emailVo, name: nameVo, addresses: [], id: optionalIdVo });
 
     // Raise an event!
-    user.addDomainEvent(new UserRegisteredEvent(user.entityId, emailVo.value, nameVo.value));
+    user.addDomainEvent(new UserRegisteredEvent(user.aggregateId, emailVo.value, nameVo.value));
 
     return user;
   }

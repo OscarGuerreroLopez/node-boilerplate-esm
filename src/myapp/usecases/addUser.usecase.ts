@@ -11,7 +11,7 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       const userEntity = UserEntity.create(user);
 
       for (const address of user.addresses) {
-        const addressEntity = AddressEntity.create(address.street, address.city, address.country);
+        const addressEntity = AddressEntity.create(address.street, address.city, address.country, userEntity.aggregateId);
         userEntity.addAddress(addressEntity);
       }
 
@@ -32,7 +32,7 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       });
 
       const addressEvents = userModel.addresses.flatMap(({ street, city, country }) => {
-        const addressEntity = AddressEntity.create(street, city, country);
+        const addressEntity = AddressEntity.create(street, city, country, savedUserEntity.aggregateId);
         savedUserEntity.addAddress(addressEntity);
         return addressEntity.getDomainEvents();
       });
