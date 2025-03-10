@@ -1,6 +1,5 @@
 import { AddressEntity } from '@/core/domain/entities/address.entity';
 import { UserEntity } from '@/core/domain/entities/user.entity';
-import { DomainAsyncEventDispatcher } from '@/core/domain/events/domain-async-dispacher.event';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
@@ -10,28 +9,13 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
       const userEntity = UserEntity.create(user);
-      const userEvents = userEntity.getDomainEvents();
-
-      const addressEvents = [];
 
       for (const address of user.addresses) {
         const addressEntity = AddressEntity.create(address.street, address.city, address.country);
         userEntity.addAddress(addressEntity);
-        addressEvents.push(addressEntity.getDomainEvents());
       }
 
-      for (const event of userEvents) {
-        await DomainAsyncEventDispatcher.dispatch(event);
-        DomainEventDispatcher.dispatch(event);
-      }
-
-      for (const events of addressEvents) {
-        for (const event of events) {
-          await DomainAsyncEventDispatcher.dispatch(event);
-        }
-      }
-
-      const result = await userRepository.addUser({
+      const userModel = await userRepository.addUser({
         email: userEntity.getEmail().value,
         name: userEntity.getName().value,
         addresses: userEntity.getAddresses().map((address) => ({
@@ -41,13 +25,34 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
         })),
       });
 
+      const savedUserEntity = UserEntity.create({
+        id: userModel._id,
+        email: userModel.email,
+        name: userModel.name,
+      });
+
+      const addressEvents = userModel.addresses.flatMap(({ street, city, country }) => {
+        const addressEntity = AddressEntity.create(street, city, country);
+        savedUserEntity.addAddress(addressEntity);
+        return addressEntity.getDomainEvents();
+      });
+
+      const userEvents = savedUserEntity.getDomainEvents();
+
+      const allEvents = [...userEvents, ...addressEvents];
+
+      for (const event of allEvents) {
+        DomainEventDispatcher.dispatch(event);
+      }
+
+      savedUserEntity.clearDomainEvents();
       userEntity.clearDomainEvents();
 
       return {
-        id: result.getId().value,
-        email: result.getEmail().value,
-        name: result.getName().value,
-        addresses: result.getAddresses().map((address) => ({
+        id: savedUserEntity.getId().value,
+        email: savedUserEntity.getEmail().value,
+        name: savedUserEntity.getName().value,
+        addresses: savedUserEntity.getAddresses().map((address) => ({
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,

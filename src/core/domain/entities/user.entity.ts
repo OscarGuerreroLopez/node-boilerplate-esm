@@ -19,7 +19,7 @@ export class UserEntity extends Entity<UserProps> {
   }
 
   /** 📌 Factory method to create a new user */
-  public static create({ email, name, id }: User): UserEntity {
+  public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>): UserEntity {
     const emailVo = EmailVo.create(email);
     const nameVo = NameVo.create(name);
     const optionalIdVo = OptionalIdVo.create(id);

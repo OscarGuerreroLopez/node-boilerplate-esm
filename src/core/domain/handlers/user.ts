@@ -1,28 +1,9 @@
 import { logger } from '@/shared/logger';
-import { DomainAsyncEventDispatcher } from '../events/domain-async-dispacher.event';
 import { DomainEventDispatcher } from '../events/domain-dispacher.event';
 import { UserRegisteredEvent } from '../events/user-register.event';
 
-DomainAsyncEventDispatcher.register(UserRegisteredEvent, async (event) => {
-  const result = await new Promise((resolve, reject) =>
-    setTimeout(() => {
-      if (event.name === 'dummy') {
-        reject(new Error('Name cannot be "dummy"'));
-      } else {
-        resolve(`Result for ${event.name} all good`);
-      }
-    }, 200),
-  );
-
-  logger.info(JSON.stringify(result), {
-    file: 'src/core/domain/handlers/user.ts',
-    service: 'playground',
-    code: '',
-  });
-});
-
 DomainEventDispatcher.register(UserRegisteredEvent, (event) => {
-  dummyAsync(event)
+  fakeKYCService(event)
     .then((result) => {
       logger.info(result, {
         file: 'src/core/domain/handlers/user.ts',
@@ -39,13 +20,43 @@ DomainEventDispatcher.register(UserRegisteredEvent, (event) => {
     });
 });
 
-const dummyAsync = async (event: UserRegisteredEvent): Promise<string> => {
+DomainEventDispatcher.register(UserRegisteredEvent, (event) => {
+  fakeEmailCheckerService(event)
+    .then((result) => {
+      logger.info(result, {
+        file: 'src/core/domain/handlers/user.ts',
+        service: 'playground',
+        code: '',
+      });
+    })
+    .catch((error) => {
+      logger.warn(error instanceof Error ? error.message : JSON.stringify(error), {
+        file: 'src/core/domain/handlers/user.ts',
+        service: 'playground',
+        code: '',
+      });
+    });
+});
+
+const fakeEmailCheckerService = async (event: UserRegisteredEvent): Promise<string> => {
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
       if (event.email === 'hola@hola.com') {
-        reject(new Error(`email ${event.email} is high risk, check it please`));
+        reject(new Error(`[USER HANDLER] email ${event.email} is high risk, check it please`));
       } else {
-        resolve(`email ${event.email} all good`);
+        resolve(`[USER HANDLER] Result for email ${event.email} all good`);
+      }
+    }, 200),
+  );
+};
+
+const fakeKYCService = async (event: UserRegisteredEvent): Promise<string> => {
+  return await new Promise((resolve, reject) =>
+    setTimeout(() => {
+      if (event.name === 'dummy') {
+        reject(new Error('[USER HANDLER] Name cannot be "dummy"'));
+      } else {
+        resolve(`[USER HANDLER] Result for name ${event.name} all good`);
       }
     }, 200),
   );
