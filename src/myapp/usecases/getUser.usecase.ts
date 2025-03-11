@@ -1,6 +1,4 @@
-import { AddressEntity } from '@/core/domain/entities/address.entity';
 import { UserAggregate } from '@/core/domain/entities/user-aggregate';
-import { UserEntity } from '@/core/domain/entities/user.entity';
 import { WarnError } from '@/core/errors';
 import { type GetUserUsecase, type MakeGetUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
@@ -16,12 +14,13 @@ export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
           statusCode: 400,
         });
       }
-      const userEntity = UserEntity.fromData({ email: userModel.email, name: userModel.name });
-      const addressEntities = userModel.addresses.map((address) =>
-        AddressEntity.fromData({ street: address.street, city: address.city, country: address.country }),
-      );
 
-      const userAggregate = UserAggregate.create(userEntity, addressEntities, userModel.aggregateId);
+      const userAggregate = UserAggregate.fromData({
+        email: userModel.email,
+        name: userModel.name,
+        addresses: userModel.addresses,
+        aggregateId: userModel.aggregateId,
+      });
 
       console.log('@@@111', userAggregate.getUser().getEmail().value);
       console.log('@@@222', userAggregate.getAddresses()[0].getCity().value);

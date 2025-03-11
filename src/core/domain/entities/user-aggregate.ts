@@ -1,5 +1,5 @@
-import { type UserEntity } from './user.entity';
-import { type AddressEntity } from './address.entity';
+import { UserEntity } from './user.entity';
+import { AddressEntity } from './address.entity';
 import { AggregateRoot } from './aggregate';
 
 interface UserAggregateProps {
@@ -14,6 +14,22 @@ export class UserAggregate extends AggregateRoot<UserAggregateProps> {
 
   public static create(user: UserEntity, addresses: AddressEntity[], aggregateId?: string): UserAggregate {
     return new UserAggregate({ user, addresses }, aggregateId);
+  }
+
+  public static fromData({
+    email,
+    name,
+    addresses,
+    aggregateId,
+  }: {
+    email: string;
+    name: string;
+    addresses: Array<{ street: string; city: string; country: string }>;
+    aggregateId: string;
+  }): UserAggregate {
+    const userEntity = UserEntity.fromData({ email, name });
+    const addressEntities = addresses.map((address) => AddressEntity.fromData(address));
+    return new UserAggregate({ user: userEntity, addresses: addressEntities }, aggregateId);
   }
 
   public getUser(): UserEntity {
