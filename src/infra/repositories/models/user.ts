@@ -1,10 +1,11 @@
-import { type AddressWithEntityId, type IUserModel } from '@/core/types/models/user.model';
+import { type IUserModel } from '@/core/types/models/user.model';
+import { type Address } from '@/core/types/user';
 
 export class UserModel implements IUserModel {
   public name: string;
   public email: string;
   public aggregateId: string;
-  public addresses: AddressWithEntityId[];
+  public addresses: Address[];
   createdAt?: Date;
   updatedAt?: Date;
 
@@ -19,7 +20,7 @@ export class UserModel implements IUserModel {
     name: string;
     email: string;
     aggregateId: string;
-    addresses: AddressWithEntityId[];
+    addresses: Address[];
     createdAt?: Date;
     updatedAt?: Date;
   }) {

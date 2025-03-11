@@ -26,6 +26,13 @@ export class AddressEntity extends Entity<AddressProps> {
     return address;
   }
 
+  public static fromData(data: { street: string; city: string; country: string; entityId?: string }): AddressEntity {
+    const streetVo = AddressVo.create(data.street);
+    const cityVo = AddressVo.create(data.city);
+    const countryVo = AddressVo.create(data.country);
+    return new AddressEntity({ street: streetVo, city: cityVo, country: countryVo }, data.entityId);
+  }
+
   public getStreet(): AddressVo {
     return this.props.street;
   }

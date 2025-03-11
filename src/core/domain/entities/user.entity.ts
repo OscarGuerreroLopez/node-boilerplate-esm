@@ -1,16 +1,12 @@
 import { UserRegisteredEvent } from '../events/user-register.event';
 import { EmailVo } from '../value-objects/email';
 import { NameVo } from '../value-objects/name';
-import { type AddressEntity } from './address.entity';
-import { OptionalIdVo } from '../value-objects/optionalId';
 import { type User } from '@/core/types/user';
 import { Entity } from './entity';
 
 interface UserProps {
   email: EmailVo;
   name: NameVo;
-  addresses: AddressEntity[];
-  id: OptionalIdVo;
 }
 
 export class UserEntity extends Entity<UserProps> {
@@ -22,13 +18,18 @@ export class UserEntity extends Entity<UserProps> {
   public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>, entityId?: string): UserEntity {
     const emailVo = EmailVo.create(email);
     const nameVo = NameVo.create(name);
-    const optionalIdVo = OptionalIdVo.create(id);
-    const user = new UserEntity({ email: emailVo, name: nameVo, addresses: [], id: optionalIdVo }, entityId);
+    const user = new UserEntity({ email: emailVo, name: nameVo }, entityId);
 
     // Raise an event!
     user.addDomainEvent(new UserRegisteredEvent({ entityId: user.entityId, email: emailVo.value, name: nameVo.value }));
 
     return user;
+  }
+
+  public static fromData(data: { email: string; name: string; entityId?: string }): UserEntity {
+    const emailVo = EmailVo.create(data.email);
+    const nameVo = NameVo.create(data.name);
+    return new UserEntity({ email: emailVo, name: nameVo }, data.entityId);
   }
 
   public getName(): NameVo {
@@ -37,22 +38,5 @@ export class UserEntity extends Entity<UserProps> {
 
   public getEmail(): EmailVo {
     return this.props.email;
-  }
-
-  public getId(): OptionalIdVo {
-    return this.props.id;
-  }
-
-  /** 📌 Add an address (must go through User) */
-  public addAddress(address: AddressEntity): void {
-    if (this.props.addresses.length >= 3) {
-      throw new Error('A user can have a maximum of 3 addresses');
-    }
-    this.props.addresses.push(address);
-  }
-
-  /** 📌 Get all addresses */
-  public getAddresses(): AddressEntity[] {
-    return [...this.props.addresses];
   }
 }

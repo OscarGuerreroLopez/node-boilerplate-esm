@@ -24,7 +24,6 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,
-          entityId: address.entityId, // Include entityId here
         })),
       });
 
