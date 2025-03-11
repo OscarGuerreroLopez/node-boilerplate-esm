@@ -11,28 +11,37 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       const userEntity = UserEntity.create(user);
 
       for (const address of user.addresses) {
-        const addressEntity = AddressEntity.create(address.street, address.city, address.country, userEntity.aggregateId);
+        const addressEntity = AddressEntity.create(
+          { street: address.street, city: address.city, country: address.country },
+          userEntity.aggregateId,
+        );
         userEntity.addAddress(addressEntity);
       }
 
       const userModel = await userRepository.addUser({
         email: userEntity.getEmail().value,
         name: userEntity.getName().value,
+        aggregateId: userEntity.aggregateId,
         addresses: userEntity.getAddresses().map((address) => ({
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,
+          aggregateId: address.aggregateId,
+          entityId: address.entityId,
         })),
       });
 
-      const savedUserEntity = UserEntity.create({
-        id: userModel._id,
-        email: userModel.email,
-        name: userModel.name,
-      });
+      const savedUserEntity = UserEntity.create(
+        {
+          id: userModel._id,
+          email: userModel.email,
+          name: userModel.name,
+        },
+        userModel.aggregateId,
+      );
 
-      const addressEvents = userModel.addresses.flatMap(({ street, city, country }) => {
-        const addressEntity = AddressEntity.create(street, city, country, savedUserEntity.aggregateId);
+      const addressEvents = userModel.addresses.flatMap(({ street, city, country, aggregateId, entityId }) => {
+        const addressEntity = AddressEntity.create({ street, city, country }, aggregateId, entityId);
         savedUserEntity.addAddress(addressEntity);
         return addressEntity.getDomainEvents();
       });

@@ -9,16 +9,20 @@ interface AddressProps {
 }
 
 export class AddressEntity extends Entity<AddressProps> {
-  private constructor(props: AddressProps, aggregateId?: string) {
-    super(props, aggregateId);
+  private constructor(props: AddressProps, aggregateId?: string, entityId?: string) {
+    super(props, aggregateId, entityId);
   }
 
-  public static create(street: string, city: string, country: string, aggregateId: string): AddressEntity {
+  public static create(
+    { street, city, country }: { street: string; city: string; country: string },
+    aggregateId?: string,
+    entityId?: string,
+  ): AddressEntity {
     const streetVo = AddressVo.create(street);
     const cityVo = AddressVo.create(city);
     const countryVo = AddressVo.create(country);
 
-    const address = new AddressEntity({ street: streetVo, city: cityVo, country: countryVo }, aggregateId);
+    const address = new AddressEntity({ street: streetVo, city: cityVo, country: countryVo }, aggregateId, entityId);
 
     address.addDomainEvent(new AddAddressEvent(address.aggregateId, cityVo.value, countryVo.value, streetVo.value));
     return address;

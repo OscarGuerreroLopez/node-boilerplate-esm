@@ -14,16 +14,16 @@ interface UserProps {
 }
 
 export class UserEntity extends Entity<UserProps> {
-  private constructor(props: UserProps, aggregateId?: string) {
-    super(props, aggregateId);
+  private constructor(props: UserProps, aggregateId?: string, entityId?: string) {
+    super(props, aggregateId, entityId);
   }
 
   /** 📌 Factory method to create a new user */
-  public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>): UserEntity {
+  public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>, aggregateId?: string, entityId?: string): UserEntity {
     const emailVo = EmailVo.create(email);
     const nameVo = NameVo.create(name);
     const optionalIdVo = OptionalIdVo.create(id);
-    const user = new UserEntity({ email: emailVo, name: nameVo, addresses: [], id: optionalIdVo });
+    const user = new UserEntity({ email: emailVo, name: nameVo, addresses: [], id: optionalIdVo }, aggregateId, entityId);
 
     // Raise an event!
     user.addDomainEvent(new UserRegisteredEvent(user.aggregateId, emailVo.value, nameVo.value));
