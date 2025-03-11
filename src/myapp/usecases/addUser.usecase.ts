@@ -1,4 +1,5 @@
 import { AddressEntity } from '@/core/domain/entities/address.entity';
+import { UserAggregate } from '@/core/domain/entities/user-aggregate';
 import { UserEntity } from '@/core/domain/entities/user.entity';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { WarnError } from '@/core/errors';
@@ -9,62 +10,43 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
       const userEntity = UserEntity.create(user);
+      const addressEntities = user.addresses.map((address) =>
+        AddressEntity.create({ street: address.street, city: address.city, country: address.country }),
+      );
 
-      for (const address of user.addresses) {
-        const addressEntity = AddressEntity.create(
-          { street: address.street, city: address.city, country: address.country },
-          userEntity.aggregateId,
-        );
-        userEntity.addAddress(addressEntity);
-      }
+      const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
       const userModel = await userRepository.addUser({
-        email: userEntity.getEmail().value,
-        name: userEntity.getName().value,
-        aggregateId: userEntity.aggregateId,
-        addresses: userEntity.getAddresses().map((address) => ({
+        email: userAggregate.getUser().getEmail().value,
+        name: userAggregate.getUser().getName().value,
+        aggregateId: userAggregate.aggregateId,
+        addresses: userAggregate.getAddresses().map((address) => ({
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,
-          aggregateId: address.aggregateId,
-          entityId: address.entityId,
+          entityId: address.entityId, // Include entityId here
         })),
       });
 
-      const savedUserEntity = UserEntity.create(
-        {
-          id: userModel._id,
-          email: userModel.email,
-          name: userModel.name,
-        },
-        userModel.aggregateId,
-      );
-
-      const addressEvents = userModel.addresses.flatMap(({ street, city, country, aggregateId, entityId }) => {
-        const addressEntity = AddressEntity.create({ street, city, country }, aggregateId, entityId);
-        savedUserEntity.addAddress(addressEntity);
-        return addressEntity.getDomainEvents();
-      });
-
-      const userEvents = savedUserEntity.getDomainEvents();
-
-      const allEvents = [...userEvents, ...addressEvents];
+      const allEvents = [...userEntity.getDomainEvents(), ...addressEntities.flatMap((address) => address.getDomainEvents())];
 
       for (const event of allEvents) {
         DomainEventDispatcher.dispatch(event);
       }
 
-      savedUserEntity.clearDomainEvents();
       userEntity.clearDomainEvents();
+      addressEntities.forEach((address) => {
+        address.clearDomainEvents();
+      });
 
       return {
-        id: savedUserEntity.getId().value,
-        email: savedUserEntity.getEmail().value,
-        name: savedUserEntity.getName().value,
-        addresses: savedUserEntity.getAddresses().map((address) => ({
-          street: address.getStreet().value,
-          city: address.getCity().value,
-          country: address.getCountry().value,
+        id: userModel._id, // Use ID from DB
+        email: userModel.email,
+        name: userModel.name,
+        addresses: userModel.addresses.map(({ street, city, country }) => ({
+          street,
+          city,
+          country,
         })),
       };
     } catch (error) {

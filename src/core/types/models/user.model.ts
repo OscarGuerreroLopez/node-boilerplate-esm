@@ -1,7 +1,6 @@
 import { type Address } from '../user';
 
 export interface AddressWithAggregateId extends Address {
-  aggregateId: string;
   entityId: string;
 }
 

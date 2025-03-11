@@ -1,10 +1,10 @@
-import { type AddressWithAggregateId, type IUserModel } from '@/core/types/models/user.model';
+import { type AddressWitEntityId, type IUserModel } from '@/core/types/models/user.model';
 
 export class UserModel implements IUserModel {
   public name: string;
   public email: string;
   public aggregateId: string;
-  public addresses: AddressWithAggregateId[];
+  public addresses: AddressWitEntityId[];
   createdAt?: Date;
   updatedAt?: Date;
 

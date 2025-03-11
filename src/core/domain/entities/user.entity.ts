@@ -1,10 +1,10 @@
-import { Entity } from './entity';
 import { UserRegisteredEvent } from '../events/user-register.event';
 import { EmailVo } from '../value-objects/email';
 import { NameVo } from '../value-objects/name';
 import { type AddressEntity } from './address.entity';
 import { OptionalIdVo } from '../value-objects/optionalId';
 import { type User } from '@/core/types/user';
+import { Entity } from './entity';
 
 interface UserProps {
   email: EmailVo;
@@ -14,19 +14,19 @@ interface UserProps {
 }
 
 export class UserEntity extends Entity<UserProps> {
-  private constructor(props: UserProps, aggregateId?: string, entityId?: string) {
-    super(props, aggregateId, entityId);
+  private constructor(props: UserProps, entityId?: string) {
+    super(props, entityId);
   }
 
   /** 📌 Factory method to create a new user */
-  public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>, aggregateId?: string, entityId?: string): UserEntity {
+  public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>, entityId?: string): UserEntity {
     const emailVo = EmailVo.create(email);
     const nameVo = NameVo.create(name);
     const optionalIdVo = OptionalIdVo.create(id);
-    const user = new UserEntity({ email: emailVo, name: nameVo, addresses: [], id: optionalIdVo }, aggregateId, entityId);
+    const user = new UserEntity({ email: emailVo, name: nameVo, addresses: [], id: optionalIdVo }, entityId);
 
     // Raise an event!
-    user.addDomainEvent(new UserRegisteredEvent(user.aggregateId, emailVo.value, nameVo.value));
+    user.addDomainEvent(new UserRegisteredEvent({ entityId: user.entityId, email: emailVo.value, name: nameVo.value }));
 
     return user;
   }

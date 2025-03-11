@@ -1,9 +1,9 @@
 export abstract class DomainEvent {
   readonly occurredAt: Date;
-  readonly aggregateId: string;
+  readonly entityId: string;
 
-  constructor(aggregateId: string) {
+  constructor(entityId: string) {
     this.occurredAt = new Date();
-    this.aggregateId = aggregateId;
+    this.entityId = entityId;
   }
 }
