@@ -1,7 +1,6 @@
 import { UserRegisteredEvent } from '../events/user-register.event';
 import { EmailVo } from '../value-objects/email';
 import { NameVo } from '../value-objects/name';
-import { type User } from '@/core/types/user';
 import { Entity } from './entity';
 
 interface UserProps {
@@ -15,7 +14,7 @@ export class UserEntity extends Entity<UserProps> {
   }
 
   /** 📌 Factory method to create a new user */
-  public static create({ email, name, id }: Pick<User, 'email' | 'name' | 'id'>, entityId?: string): UserEntity {
+  public static create({ email, name }: { email: string; name: string }, entityId?: string): UserEntity {
     const emailVo = EmailVo.create(email);
     const nameVo = NameVo.create(name);
     const user = new UserEntity({ email: emailVo, name: nameVo }, entityId);
