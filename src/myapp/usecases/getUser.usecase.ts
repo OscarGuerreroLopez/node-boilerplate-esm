@@ -1,4 +1,5 @@
 import { UserAggregate } from '@/core/domain/entities/user-aggregate';
+import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
 import { WarnError } from '@/core/errors';
 import { type GetUserUsecase, type MakeGetUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
@@ -22,8 +23,11 @@ export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
         aggregateId: userModel.aggregateId,
       });
 
-      console.log('@@@111', userAggregate.getUser().getEmail().value);
-      console.log('@@@222', userAggregate.getAddresses()[0].getCity().value);
+      const domainEvents = userAggregate.getDomainEvents();
+
+      for (const event of domainEvents) {
+        DomainAggregateEventDispatcher.dispatch(event);
+      }
 
       return {
         id: userModel._id, // Use ID from DB

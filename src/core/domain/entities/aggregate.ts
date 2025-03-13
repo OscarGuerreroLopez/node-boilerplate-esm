@@ -1,10 +1,10 @@
 import { v4 as uuidv4, validate as isValidUUID } from 'uuid';
-import { type DomainEvent } from '../events/domain.event';
+import { type AggregateDomainEvent } from '../events/aggregate-domain.event';
 
 export abstract class AggregateRoot<T> {
   readonly aggregateId: string;
   protected readonly props: Readonly<T>;
-  private domainEvents: DomainEvent[] = [];
+  private domainEvents: AggregateDomainEvent[] = [];
 
   constructor(props: T, aggregateId?: string) {
     if (aggregateId != null && !isValidUUID(aggregateId)) {
@@ -15,12 +15,12 @@ export abstract class AggregateRoot<T> {
   }
 
   /** 📌 Add a new domain event */
-  protected addDomainEvent(event: DomainEvent): void {
+  protected addDomainEvent(event: AggregateDomainEvent): void {
     this.domainEvents.push(event);
   }
 
   /** 📌 Retrieve all events */
-  public getDomainEvents(): DomainEvent[] {
+  public getDomainEvents(): AggregateDomainEvent[] {
     return this.domainEvents;
   }
 

@@ -1,6 +1,25 @@
 import { logger } from '@/shared/logger';
 import { DomainEventDispatcher } from '../events/domain-dispacher.event';
 import { UserRegisteredEvent } from '../events/user-register.event';
+import { UserAggregateRegisteredEvent } from '../events/aggregate-created.event';
+import { DomainAggregateEventDispatcher } from '../events/domain-aggregate-dispatcher.event';
+import { UserAggregateRetrievedEvent } from '../events/aggregate-retrieved.event';
+
+DomainAggregateEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
+  logger.info(JSON.stringify(event), {
+    file: 'src/core/domain/handlers/user.ts',
+    service: 'playground',
+    code: '',
+  });
+});
+
+DomainAggregateEventDispatcher.register(UserAggregateRetrievedEvent, (event) => {
+  logger.info(JSON.stringify(event), {
+    file: 'src/core/domain/handlers/user.ts',
+    service: 'playground',
+    code: '',
+  });
+});
 
 DomainEventDispatcher.register(UserRegisteredEvent, (event) => {
   fakeKYCService(event)

@@ -1,6 +1,8 @@
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
 import { AggregateRoot } from './aggregate';
+import { UserAggregateRegisteredEvent } from '../events/aggregate-created.event';
+import { UserAggregateRetrievedEvent } from '../events/aggregate-retrieved.event';
 
 interface UserAggregateProps {
   user: UserEntity;
@@ -13,7 +15,13 @@ export class UserAggregate extends AggregateRoot<UserAggregateProps> {
   }
 
   public static create(user: UserEntity, addresses: AddressEntity[], aggregateId?: string): UserAggregate {
-    return new UserAggregate({ user, addresses }, aggregateId);
+    const userAggregate = new UserAggregate({ user, addresses }, aggregateId);
+    const userEntity = userAggregate.getUser();
+    const addressEntities = userAggregate.getAddresses();
+    userAggregate.addDomainEvent(
+      new UserAggregateRegisteredEvent({ user: userEntity, addresses: addressEntities, aggregateId: userAggregate.aggregateId }),
+    );
+    return userAggregate;
   }
 
   public static fromData({
@@ -29,7 +37,12 @@ export class UserAggregate extends AggregateRoot<UserAggregateProps> {
   }): UserAggregate {
     const userEntity = UserEntity.fromData({ email, name });
     const addressEntities = addresses.map((address) => AddressEntity.fromData(address));
-    return new UserAggregate({ user: userEntity, addresses: addressEntities }, aggregateId);
+    const userAggregate = new UserAggregate({ user: userEntity, addresses: addressEntities }, aggregateId);
+    userAggregate.addDomainEvent(
+      new UserAggregateRetrievedEvent({ user: userEntity, addresses: addressEntities, aggregateId: userAggregate.aggregateId }),
+    );
+
+    return userAggregate;
   }
 
   public getUser(): UserEntity {
