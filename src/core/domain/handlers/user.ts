@@ -6,7 +6,7 @@ import { DomainAggregateEventDispatcher } from '../events/domain-aggregate-dispa
 import { UserAggregateRetrievedEvent } from '../events/aggregate-retrieved.event';
 
 DomainAggregateEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
-  logger.info(JSON.stringify(event), {
+  logger.info(`[USER AGGREGATE HANDLER] new register user ${event.user.getEmail().value} `, {
     file: 'src/core/domain/handlers/user.ts',
     service: 'playground',
     code: '',
