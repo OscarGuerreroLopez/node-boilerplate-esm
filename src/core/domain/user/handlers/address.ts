@@ -1,6 +1,6 @@
 import { logger } from '@/shared/logger';
+import { DomainEventDispatcher } from '../../events/domain-dispacher.event';
 import { AddAddressEvent } from '../events/add-address.event';
-import { DomainEventDispatcher } from '../events/domain-dispacher.event';
 
 DomainEventDispatcher.register(AddAddressEvent, (event) => {
   fakeCountryCheckerService(event)

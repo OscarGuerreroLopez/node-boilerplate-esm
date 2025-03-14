@@ -1,7 +1,7 @@
 import { UserRegisteredEvent } from '../events/user-register.event';
-import { EmailVo } from '../value-objects/email';
-import { NameVo } from '../value-objects/name';
-import { Entity } from './entity';
+import { EmailVo } from '../../value-objects/email';
+import { NameVo } from '../../value-objects/name';
+import { Entity } from '../../entities/entity';
 
 interface UserProps {
   email: EmailVo;

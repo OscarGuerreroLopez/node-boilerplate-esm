@@ -9,8 +9,8 @@ import { credentialsMiddleware } from './shared/middleware/credentials.middlewar
 import { WarnError } from './core/errors';
 import ExceptionMiddleware from './shared/middleware/exception.middleware';
 import { expressRateLimiter } from './shared/middleware/rateLimiter.middleware';
-import './core/domain/handlers/user';
-import './core/domain/handlers/address';
+import './core/domain/user/handlers/user';
+import './core/domain/user/handlers/address';
 
 const apiPrefix = `/${envs.SERVICE_NAME}/${envs.API_PREFIX}`;
 const routes = AppRoutes.routes;

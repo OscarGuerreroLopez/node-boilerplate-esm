@@ -1,4 +1,4 @@
-import { UserAggregate } from '@/core/domain/entities/user.aggregate';
+import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
 import { WarnError } from '@/core/errors';
 import { type GetUserUsecase, type MakeGetUser } from '@/core/types/user/usecases';

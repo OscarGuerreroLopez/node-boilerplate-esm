@@ -1,6 +1,6 @@
+import { Entity } from '../../entities/entity';
+import { AddressVo } from '../../value-objects/address';
 import { AddAddressEvent } from '../events/add-address.event';
-import { AddressVo } from '../value-objects/address';
-import { Entity } from './entity';
 
 interface AddressProps {
   street: AddressVo;

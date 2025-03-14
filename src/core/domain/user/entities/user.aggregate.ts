@@ -1,6 +1,6 @@
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
-import { AggregateRoot } from './aggregate';
+import { AggregateRoot } from '../../entities/aggregate';
 import { UserAggregateRegisteredEvent } from '../events/aggregate-created.event';
 import { UserAggregateRetrievedEvent } from '../events/aggregate-retrieved.event';
 

@@ -1,4 +1,4 @@
-import { DomainEvent } from './domain.event';
+import { DomainEvent } from '../../events/domain.event';
 
 interface UserRegisteredEventProps {
   entityId: string;
