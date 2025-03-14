@@ -1,5 +1,5 @@
 import { AddressEntity } from '@/core/domain/entities/address.entity';
-import { UserAggregate } from '@/core/domain/entities/user-aggregate';
+import { UserAggregate } from '@/core/domain/entities/user.aggregate';
 import { UserEntity } from '@/core/domain/entities/user.entity';
 import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
@@ -44,6 +44,7 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       addressEntities.forEach((address) => {
         address.clearDomainEvents();
       });
+      userAggregate.clearDomainEvents();
 
       return {
         id: userModel._id, // Use ID from DB

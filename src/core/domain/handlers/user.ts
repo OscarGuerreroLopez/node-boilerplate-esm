@@ -14,7 +14,9 @@ DomainAggregateEventDispatcher.register(UserAggregateRegisteredEvent, (event) =>
 });
 
 DomainAggregateEventDispatcher.register(UserAggregateRetrievedEvent, (event) => {
-  logger.info(JSON.stringify(event), {
+  const user = event.user.getName().value;
+  const userEmail = event.user.getEmail().value;
+  logger.info(`[USER AGGREGATE HANDLER] user retrieved ${user} email: ${userEmail} `, {
     file: 'src/core/domain/handlers/user.ts',
     service: 'playground',
     code: '',
