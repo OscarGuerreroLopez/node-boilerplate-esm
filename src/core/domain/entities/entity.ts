@@ -3,7 +3,7 @@ import { type DomainEvent } from '../events/domain.event';
 
 export abstract class Entity<T> {
   readonly entityId: string;
-  protected readonly props: Readonly<T>;
+  protected props: T;
   private domainEvents: DomainEvent[] = [];
 
   constructor(props: T, entityId?: string) {
@@ -11,7 +11,7 @@ export abstract class Entity<T> {
       throw new Error('Invalid entity ID format');
     }
     this.entityId = entityId ?? uuidv4();
-    this.props = Object.freeze(props); // Ensure immutability
+    this.props = props; // Ensure immutability
   }
 
   /** 📌 Add a new domain event */

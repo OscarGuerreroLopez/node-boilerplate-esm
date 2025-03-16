@@ -29,16 +29,7 @@ export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
         DomainAggregateEventDispatcher.dispatch(event);
       }
 
-      return {
-        id: userModel._id, // Use ID from DB
-        email: userModel.email,
-        name: userModel.name,
-        addresses: userModel.addresses.map(({ street, city, country }) => ({
-          street,
-          city,
-          country,
-        })),
-      };
+      return { user: userAggregate, id: userModel._id };
     } catch (error) {
       logger.error(error instanceof Error ? error.message : JSON.stringify(error), {
         file: 'src/myapp/usecases/addUser.usecase.ts',

@@ -1,6 +1,7 @@
 import { type IUserModel } from '@/core/types/models/user.model';
 import { BaseRepository } from './base.repository';
 import { type IUserRepository } from '@/core/types/repositories/user.repository';
+import { Status } from '@/core/types/user';
 
 export class UserRepository extends BaseRepository<IUserModel> implements IUserRepository {
   protected async createIndexes(): Promise<void> {
@@ -18,6 +19,15 @@ export class UserRepository extends BaseRepository<IUserModel> implements IUserR
   }
 
   async addUser(user: IUserModel): Promise<IUserModel> {
+    if (user.status == null) {
+      user.status = Status.PENDING;
+    }
+
+    user.addresses = user.addresses.map((address) => {
+      address.status = Status.PENDING;
+      return address;
+    });
+
     const userModel = await this.insert(user);
     return userModel;
   }

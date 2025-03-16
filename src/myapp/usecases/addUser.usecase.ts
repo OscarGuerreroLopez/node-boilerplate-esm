@@ -28,6 +28,24 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
         })),
       });
 
+      userAggregate.getUser().changeName(userModel.name);
+      userAggregate.getUser().changeEmail(userModel.email);
+      if (userModel.status != null) {
+        userAggregate.getUser().changeStatus(userModel.status);
+      }
+
+      userAggregate.getAddresses().forEach((address, index) => {
+        address.changeStreet(userModel.addresses[index].street);
+        address.changeCity(userModel.addresses[index].city);
+        address.changeCountry(userModel.addresses[index].country);
+
+        const addressStatus = userModel.addresses[index].status;
+
+        if (addressStatus != null) {
+          address.changeStatus(addressStatus);
+        }
+      });
+
       const allEvents = [...userEntity.getDomainEvents(), ...addressEntities.flatMap((address) => address.getDomainEvents())];
 
       for (const event of allEvents) {
@@ -46,16 +64,7 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       });
       userAggregate.clearDomainEvents();
 
-      return {
-        id: userModel._id, // Use ID from DB
-        email: userModel.email,
-        name: userModel.name,
-        addresses: userModel.addresses.map(({ street, city, country }) => ({
-          street,
-          city,
-          country,
-        })),
-      };
+      return { user: userAggregate, id: userModel._id };
     } catch (error) {
       logger.error(error instanceof Error ? error.message : JSON.stringify(error), {
         file: 'src/myapp/usecases/addUser.usecase.ts',

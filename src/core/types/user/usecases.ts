@@ -1,8 +1,14 @@
 import { type UserRepository } from '@/infra/repositories/user.repository';
-import { type User } from '.';
+import { type AddUserDto } from '@/core/dtos/addUser.dto';
+import { type UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 
-export type AddUserUsecase = (addUserParams: { user: User; code: string }) => Promise<User>;
+export interface AddUserUsecaseResponse {
+  user: UserAggregate;
+  id?: string;
+}
+
+export type AddUserUsecase = (addUserParams: { user: AddUserDto; code: string }) => Promise<AddUserUsecaseResponse>;
 export type MakeAddUser = (userRepository: UserRepository) => AddUserUsecase;
 
-export type GetUserUsecase = (id: string, code: string) => Promise<User>;
+export type GetUserUsecase = (id: string, code: string) => Promise<AddUserUsecaseResponse>;
 export type MakeGetUser = (userRepository: UserRepository) => GetUserUsecase;

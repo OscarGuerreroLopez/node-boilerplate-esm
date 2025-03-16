@@ -3,6 +3,7 @@ import { AddressEntity } from './address.entity';
 import { AggregateRoot } from '../../entities/aggregate';
 import { UserAggregateRegisteredEvent } from '../events/aggregate-created.event';
 import { UserAggregateRetrievedEvent } from '../events/aggregate-retrieved.event';
+import { type IUserModel } from '@/core/types/models/user.model';
 
 interface UserAggregateProps {
   user: UserEntity;
@@ -24,18 +25,8 @@ export class UserAggregate extends AggregateRoot<UserAggregateProps> {
     return userAggregate;
   }
 
-  public static fromData({
-    email,
-    name,
-    addresses,
-    aggregateId,
-  }: {
-    email: string;
-    name: string;
-    addresses: Array<{ street: string; city: string; country: string }>;
-    aggregateId: string;
-  }): UserAggregate {
-    const userEntity = UserEntity.fromData({ email, name });
+  public static fromData({ email, name, addresses, status, aggregateId }: IUserModel): UserAggregate {
+    const userEntity = UserEntity.fromData({ email, name, status });
     const addressEntities = addresses.map((address) => AddressEntity.fromData(address));
     const userAggregate = new UserAggregate({ user: userEntity, addresses: addressEntities }, aggregateId);
     userAggregate.addDomainEvent(

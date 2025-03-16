@@ -3,7 +3,6 @@ import { type CustomRequest } from '@/core/types/express-request';
 import { type NextFunction, type Response } from 'express';
 import { checkMongoDatabase } from '../services';
 import { type MetaResponseDto, type SuccessResponse } from '@/core/dtos/response.dto';
-import { type User } from '@/core/types/user';
 import { AddUserDto } from '@/core/dtos/addUser.dto';
 import { UserResponseDto } from '@/core/dtos/addUserResponse.dto';
 import { addUserUsecase, getUserUsecase } from '../usecases';
@@ -29,7 +28,7 @@ export class MyAppController {
   public addUser = (req: CustomRequest, res: Response<SuccessResponse<UserResponseDto & { code: string }>>, next: NextFunction): void => {
     const { code } = req;
 
-    const dto = AddUserDto.create(req.body as User);
+    const dto = AddUserDto.create(req.body);
 
     if (code == null) {
       next(new Error('Code is required'));
