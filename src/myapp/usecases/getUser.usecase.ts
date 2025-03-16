@@ -20,6 +20,7 @@ export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
         email: userModel.email,
         name: userModel.name,
         addresses: userModel.addresses,
+        status: userModel.status,
         aggregateId: userModel.aggregateId,
       });
 
