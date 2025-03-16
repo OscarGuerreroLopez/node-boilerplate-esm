@@ -1,10 +1,10 @@
 import { logger } from '@/shared/logger';
-import { DomainEventDispatcher } from '../../../core/domain/events/domain-dispacher.event';
+import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 
-import { UserAggregateRegisteredEvent } from '../../../core/domain/user/events/aggregate-created.event';
-import { DomainAggregateEventDispatcher } from '../../../core/domain/events/domain-aggregate-dispatcher.event';
-import { UserAggregateRetrievedEvent } from '../../../core/domain/user/events/aggregate-retrieved.event';
-import { UserRegisteredEvent } from '../../../core/domain/user/events/user-register.event';
+import { UserAggregateRegisteredEvent } from '@/core/domain/user/events/aggregate-created.event';
+import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
+import { UserAggregateRetrievedEvent } from '@/core/domain/user/events/aggregate-retrieved.event';
+import { UserRegisteredEvent } from '@/core/domain/user/events/user-register.event';
 
 DomainAggregateEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
   logger.info(`[USER AGGREGATE HANDLER] new register user ${event.user.getEmail().value} `, {
