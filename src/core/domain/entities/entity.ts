@@ -3,7 +3,7 @@ import { type DomainEvent } from '../events/domain.event';
 
 export abstract class Entity<T> {
   readonly entityId: string;
-  protected readonly props: Readonly<T>;
+  protected props: T;
   private domainEvents: DomainEvent[] = [];
 
   constructor(props: T, entityId?: string) {
@@ -11,7 +11,7 @@ export abstract class Entity<T> {
       throw new Error('Invalid entity ID format');
     }
     this.entityId = entityId ?? uuidv4();
-    this.props = Object.freeze(props); // Ensure immutability
+    this.props = props; // Ensure immutability
   }
 
   /** 📌 Add a new domain event */
@@ -35,25 +35,5 @@ export abstract class Entity<T> {
 
   public getProps(): Readonly<T> {
     return Object.freeze({ ...this.props });
-  }
-
-  public toJSON(): T {
-    const serializeValue = (value: unknown): unknown => {
-      if (Array.isArray(value)) {
-        return value.map((item) => serializeValue(item));
-      }
-      if (value instanceof Entity) {
-        return value.toJSON();
-      }
-      if (value instanceof Object && 'value' in value) {
-        return value.value;
-      }
-      return value;
-    };
-
-    return {
-      entityId: this.entityId,
-      ...Object.fromEntries(Object.entries(this.props).map(([key, value]) => [key, serializeValue(value)])),
-    } as unknown as T;
   }
 }

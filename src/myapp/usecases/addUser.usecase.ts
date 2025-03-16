@@ -1,50 +1,70 @@
-import { AddressEntity } from '@/core/domain/entities/address.entity';
-import { UserEntity } from '@/core/domain/entities/user.entity';
-import { DomainAsyncEventDispatcher } from '@/core/domain/events/domain-async-dispacher.event';
+import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
+import { UserEntity } from '@/core/domain/user/entities/user.entity';
+import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
+import { AddressEntity } from '@/core/domain/user/entities/address.entity';
 
-export const makeAddUserUsecase: MakeAddUser = () => {
+export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
       const userEntity = UserEntity.create(user);
-      const userEvents = userEntity.getDomainEvents();
+      const addressEntities = user.addresses.map((address) =>
+        AddressEntity.create({ street: address.street, city: address.city, country: address.country }),
+      );
 
-      const addressEvents = [];
+      const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
-      for (const address of user.addresses) {
-        const addressEntity = AddressEntity.create(address.street, address.city, address.country);
-        userEntity.addAddress(addressEntity);
-        addressEvents.push(addressEntity.getDomainEvents());
-      }
-
-      for (const event of userEvents) {
-        await DomainAsyncEventDispatcher.dispatch(event);
-        DomainEventDispatcher.dispatch(event);
-      }
-
-      for (const events of addressEvents) {
-        for (const event of events) {
-          await DomainAsyncEventDispatcher.dispatch(event);
-        }
-      }
-
-      const result = {
-        id: userEntity.getId().value,
-        email: userEntity.getEmail().value,
-        name: userEntity.getName().value,
-        addresses: userEntity.getAddresses().map((address) => ({
+      const userModel = await userRepository.addUser({
+        email: userAggregate.getUser().getEmail().value,
+        name: userAggregate.getUser().getName().value,
+        aggregateId: userAggregate.aggregateId,
+        addresses: userAggregate.getAddresses().map((address) => ({
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,
         })),
-      };
+      });
+
+      userAggregate.getUser().changeName(userModel.name);
+      userAggregate.getUser().changeEmail(userModel.email);
+      if (userModel.status != null) {
+        userAggregate.getUser().changeStatus(userModel.status);
+      }
+
+      userAggregate.getAddresses().forEach((address, index) => {
+        address.changeStreet(userModel.addresses[index].street);
+        address.changeCity(userModel.addresses[index].city);
+        address.changeCountry(userModel.addresses[index].country);
+
+        const addressStatus = userModel.addresses[index].status;
+
+        if (addressStatus != null) {
+          address.changeStatus(addressStatus);
+        }
+      });
+
+      const allEvents = [...userEntity.getDomainEvents(), ...addressEntities.flatMap((address) => address.getDomainEvents())];
+
+      for (const event of allEvents) {
+        DomainEventDispatcher.dispatch(event);
+      }
+
+      const allUserAggregatedEvent = [...userAggregate.getDomainEvents()];
+
+      for (const event of allUserAggregatedEvent) {
+        DomainAggregateEventDispatcher.dispatch(event);
+      }
 
       userEntity.clearDomainEvents();
+      addressEntities.forEach((address) => {
+        address.clearDomainEvents();
+      });
+      userAggregate.clearDomainEvents();
 
-      return result;
+      return { user: userAggregate, id: userModel._id };
     } catch (error) {
       logger.error(error instanceof Error ? error.message : JSON.stringify(error), {
         file: 'src/myapp/usecases/addUser.usecase.ts',
