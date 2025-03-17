@@ -2,11 +2,11 @@ import { logger } from '@/shared/logger';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 
 import { UserAggregateRegisteredEvent } from '@/core/domain/user/events/aggregate-created.event';
-import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
+
 import { UserAggregateRetrievedEvent } from '@/core/domain/user/events/aggregate-retrieved.event';
 import { UserRegisteredEvent } from '@/core/domain/user/events/user-register.event';
 
-DomainAggregateEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
+DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
   logger.info(`[USER AGGREGATE HANDLER] new register user ${event.user.getEmail().value} `, {
     file: 'src/core/domain/handlers/user.ts',
     service: 'playground',
@@ -14,7 +14,7 @@ DomainAggregateEventDispatcher.register(UserAggregateRegisteredEvent, (event) =>
   });
 });
 
-DomainAggregateEventDispatcher.register(UserAggregateRetrievedEvent, (event) => {
+DomainEventDispatcher.register(UserAggregateRetrievedEvent, (event) => {
   const user = event.user.getName().value;
   const userEmail = event.user.getEmail().value;
   logger.info(`[USER AGGREGATE HANDLER] user retrieved ${user} email: ${userEmail} `, {

@@ -1,5 +1,5 @@
 import { v4 as uuidv4, validate as isValidUUID } from 'uuid';
-import { type AggregateDomainEvent } from '../events/aggregate-domain.event';
+import { type AggregateDomainEvent } from '../events/domain.event';
 
 export abstract class AggregateRoot<T> {
   readonly aggregateId: string;

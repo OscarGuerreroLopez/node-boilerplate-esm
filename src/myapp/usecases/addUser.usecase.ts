@@ -1,6 +1,5 @@
 import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { UserEntity } from '@/core/domain/user/entities/user.entity';
-import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
@@ -55,7 +54,7 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       const allUserAggregatedEvent = [...userAggregate.getDomainEvents()];
 
       for (const event of allUserAggregatedEvent) {
-        DomainAggregateEventDispatcher.dispatch(event);
+        DomainEventDispatcher.dispatch(event);
       }
 
       userEntity.clearDomainEvents();

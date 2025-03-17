@@ -1,6 +1,6 @@
+import { AggregateDomainEvent } from '../../events/domain.event';
 import { type AddressEntity } from '../entities/address.entity';
 import { type UserEntity } from '../entities/user.entity';
-import { AggregateDomainEvent } from '../../events/aggregate-domain.event';
 
 interface UserAggregateRegisteredEventProps {
   aggregateId: string;
