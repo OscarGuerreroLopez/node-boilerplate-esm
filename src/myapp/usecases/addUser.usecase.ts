@@ -45,11 +45,11 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
         }
       });
 
-      const allEvents = [...userEntity.getDomainEvents(), ...addressEntities.flatMap((address) => address.getDomainEvents())];
+      // const allEvents = [...userEntity.getDomainEvents(), ...addressEntities.flatMap((address) => address.getDomainEvents())];
 
-      for (const event of allEvents) {
-        DomainEventDispatcher.dispatch(event);
-      }
+      // for (const event of allEvents) {
+      //   DomainEventDispatcher.dispatch(event);
+      // }
 
       const allUserAggregatedEvent = [...userAggregate.getDomainEvents()];
 
