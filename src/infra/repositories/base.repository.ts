@@ -77,6 +77,10 @@ export abstract class BaseRepository<T> {
   protected async updateOne(where: Partial<T>, values: Partial<T>): Promise<NonNullable<T> | null> {
     await this.initializeCollection();
 
+    if (where != null && '_id' in where && typeof where._id === 'string') {
+      where = { ...where, _id: new ObjectId(where._id) };
+    }
+
     const doc = await this._collection.findOne(where);
 
     if (doc == null) {

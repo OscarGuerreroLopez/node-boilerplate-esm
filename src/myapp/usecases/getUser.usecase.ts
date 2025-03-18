@@ -12,7 +12,7 @@ export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
       if (userModel?.email == null || userModel?.name == null) {
         throw new WarnError({
           message: 'User data is incomplete',
-          statusCode: 400,
+          statusCode: 404,
         });
       }
 
