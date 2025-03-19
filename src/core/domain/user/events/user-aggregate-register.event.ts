@@ -1,4 +1,4 @@
-import { AggregateDomainEvent } from '../../events/domain.event';
+import { DomainEvent } from '../../events/domain.event';
 import { type AddressEntity } from '../entities/address.entity';
 import { type UserEntity } from '../entities/user.entity';
 
@@ -8,7 +8,7 @@ interface UserAggregateRegisteredEventProps {
   addresses: AddressEntity[];
 }
 
-export class UserAggregateRegisteredEvent extends AggregateDomainEvent {
+export class UserAggregateRegisteredEvent extends DomainEvent {
   public readonly user: UserEntity;
   public readonly addresses: AddressEntity[];
   constructor({ user, addresses, aggregateId }: UserAggregateRegisteredEventProps) {

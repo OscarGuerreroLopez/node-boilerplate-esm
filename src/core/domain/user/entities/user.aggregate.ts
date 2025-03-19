@@ -1,7 +1,7 @@
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
 import { AggregateRoot } from '../../entities/aggregate';
-import { UserAggregateRegisteredEvent } from '../events/aggregate-created.event';
+import { UserAggregateRegisteredEvent } from '../events/user-aggregate-register.event';
 import { UserAggregateRetrievedEvent } from '../events/aggregate-retrieved.event';
 import { type IUserModel } from '@/core/types/models/user.model';
 

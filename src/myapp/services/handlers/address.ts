@@ -1,8 +1,8 @@
 import { logger } from '@/shared/logger';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
-import { AddAddressEvent } from '@/core/domain/user/events/add-address.event';
+import { AddressRegisteredEvent } from '@/core/domain/user/events/address-register.event';
 
-DomainEventDispatcher.register(AddAddressEvent, (event) => {
+DomainEventDispatcher.register(AddressRegisteredEvent, (event) => {
   fakeCountryCheckerService(event)
     .then((result) => {
       logger.info(result, {
@@ -20,7 +20,7 @@ DomainEventDispatcher.register(AddAddressEvent, (event) => {
     });
 });
 
-const fakeCountryCheckerService = async (event: AddAddressEvent): Promise<string> => {
+const fakeCountryCheckerService = async (event: AddressRegisteredEvent): Promise<string> => {
   return await new Promise((resolve, reject) =>
     setTimeout(() => {
       if (event.country === 'country') {
