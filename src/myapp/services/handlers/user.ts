@@ -16,7 +16,9 @@ DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
 
   const userName = event.user.getName().value;
   const userEmail = event.user.getEmail().value;
-  const userAddresses = event.addresses.map((address) => address.getCountry().value);
+  const userAddresses = event.addresses.map((address) => {
+    return { country: address.getCountry().value, entityId: address.entityId };
+  });
   const entityId = event.id;
 
   void kycFakeService(userName, entityId);

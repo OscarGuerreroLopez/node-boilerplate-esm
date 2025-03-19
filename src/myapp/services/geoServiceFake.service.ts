@@ -1,9 +1,9 @@
 import { logger } from '@/shared/logger';
 
-export const geoFakeService = async (countries: string[], entityId: string): Promise<void> => {
+export const geoFakeService = async (countries: Array<{ country: string; entityId: string }>, entityId: string): Promise<void> => {
   await new Promise((resolve, reject) =>
     setTimeout(() => {
-      for (const country of countries) {
+      for (const { country } of countries) {
         if (country === 'country') {
           logger.warn(`[ GEO SERVICE ${entityId}] country ${country}} is high risk, check it please`, {
             file: 'src/myapp/services/geoServiceFake.service.ts',
