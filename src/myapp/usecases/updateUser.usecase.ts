@@ -3,6 +3,7 @@ import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { WarnError } from '@/core/errors';
 import { type MakeUpdateUser, type UpdateUserUsecase } from '@/core/types/user/usecases';
 import { type IAddressModel } from '@/core/types/models/user.model';
+import { Status } from '@/core/types/user';
 
 export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUserUsecase => {
   const updateUserUsecase: UpdateUserUsecase = async ({ user, identifier, code }) => {
@@ -11,11 +12,12 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUse
     const userToUpdate = {
       name: user.name,
       email: user.email,
-      status: user.status,
+      status: user.status ?? Status.PENDING,
       addresses: user.addresses?.map((address) => ({
         street: address.street,
         city: address.city,
         country: address.country,
+        status: address.status ?? Status.PENDING,
       })) as IAddressModel[],
     };
 

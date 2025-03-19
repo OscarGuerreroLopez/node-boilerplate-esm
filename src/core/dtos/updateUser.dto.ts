@@ -24,9 +24,10 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
     this.name = name;
     this.email = email;
     this.addresses = addresses?.map((address) => ({
-      street: address.street ?? '',
-      city: address.city ?? '',
-      country: address.country ?? '',
+      street: address.street,
+      city: address.city,
+      country: address.country,
+      status: address.status,
     }));
     this.status = status;
 

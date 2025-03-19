@@ -87,7 +87,7 @@ export abstract class BaseRepository<T> {
       return null;
     }
 
-    const cleanValues = Object.fromEntries(Object.entries(values).filter(([_, value]) => value !== undefined));
+    const cleanValues = removeUndefinedDeep(values);
 
     const newItem = { ...doc, ...cleanValues, updatedAt: new Date() } as unknown as T;
 
@@ -101,4 +101,20 @@ export abstract class BaseRepository<T> {
 
     return newItem ?? null;
   }
+}
+function removeUndefinedDeep<T>(obj: T): T {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefinedDeep) as T;
+  }
+  if (typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => [key, removeUndefinedDeep(value)]),
+    ) as T;
+  }
+  return obj;
 }

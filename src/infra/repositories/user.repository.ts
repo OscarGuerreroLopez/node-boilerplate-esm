@@ -19,9 +19,7 @@ export class UserRepository extends BaseRepository<IUserModel> implements IUserR
   }
 
   async addUser(user: IUserModel): Promise<IUserModel> {
-    if (user.status == null) {
-      user.status = Status.PENDING;
-    }
+    user.status = Status.PENDING;
 
     user.addresses = user.addresses.map((address) => {
       address.status = Status.PENDING;
