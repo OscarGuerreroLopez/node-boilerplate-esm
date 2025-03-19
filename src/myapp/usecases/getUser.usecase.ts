@@ -21,7 +21,7 @@ export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
         name: userModel.name,
         addresses: userModel.addresses,
         status: userModel.status,
-        aggregateId: userModel.aggregateId,
+        entityId: userModel.entityId,
       });
 
       const domainEvents = userAggregate.getDomainEvents();

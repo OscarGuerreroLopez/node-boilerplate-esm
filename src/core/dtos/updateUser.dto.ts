@@ -1,5 +1,5 @@
 import { type ValidationType, type CoreDto } from 'micro-library-ai';
-import { type Address, type User } from '../types/user';
+import { type Status, type Address, type User } from '../types/user';
 import { ZERO } from '../types/constants';
 import { WarnError } from '../errors';
 import { type Identifier } from '../types/common';
@@ -8,16 +8,16 @@ export interface UpdateUserDtoProps {
   identifier: Identifier;
   name?: string;
   email?: string;
-  addresses?: Array<{ street: string; city: string; country: string }>;
-  status?: string;
+  addresses?: Address[];
+  status?: Status;
 }
 
 export class UpdateUserDto implements CoreDto<Partial<User>> {
   public readonly identifier: Identifier;
   public readonly name?: string;
   public readonly email?: string;
-  public readonly addresses?: Address[];
-  public readonly status?: string;
+  public readonly addresses?: Array<Partial<Address>>;
+  public readonly status?: Status;
 
   constructor({ identifier, name, email, addresses, status }: UpdateUserDtoProps) {
     this.identifier = identifier;
@@ -39,8 +39,8 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
     // Ensure identifier follows the expected format
     if (this.identifier?.type.length === 0 || this.identifier?.value.length === 0) {
       errors.push({ fields: ['identifier'], constraint: 'Identifier must be properly formatted' });
-    } else if (this.identifier?.type !== 'id' && this.identifier?.type !== 'aggregateId') {
-      errors.push({ fields: ['identifier'], constraint: 'Identifier type must be either "id" or "aggregateId"' });
+    } else if (this.identifier?.type !== 'id' && this.identifier?.type !== 'entityId') {
+      errors.push({ fields: ['identifier'], constraint: 'Identifier type must be either "id" or "entityId"' });
     }
 
     if (errors.length > ZERO) {

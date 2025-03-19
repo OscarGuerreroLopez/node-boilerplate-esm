@@ -17,13 +17,13 @@ DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
   const userName = event.user.getName().value;
   const userEmail = event.user.getEmail().value;
   const userAddresses = event.addresses.map((address) => address.getCountry().value);
-  const aggregateId = event.id;
+  const entityId = event.id;
 
-  void kycFakeService(userName, aggregateId);
+  void kycFakeService(userName, entityId);
 
-  void mailFakeService(userEmail, aggregateId);
+  void mailFakeService(userEmail, entityId);
 
-  void geoFakeService(userAddresses, aggregateId);
+  void geoFakeService(userAddresses, entityId);
 });
 
 DomainEventDispatcher.register(UserAggregateRetrievedEvent, (event) => {

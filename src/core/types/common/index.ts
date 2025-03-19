@@ -15,4 +15,4 @@ export interface BaseErrorArgs {
   validationErrors?: ValidationType[];
 }
 
-export type Identifier = { type: 'id'; value: string } | { type: 'aggregateId'; value: string };
+export type Identifier = { type: 'id'; value: string } | { type: 'entityId'; value: string };

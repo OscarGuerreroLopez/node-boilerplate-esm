@@ -2,6 +2,7 @@ import { type UserRepository } from '@/infra/repositories/user.repository';
 import { type AddUserDto } from '@/core/dtos/addUser.dto';
 import { type UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { type Identifier } from '../common';
+import { type UpdateUserDto } from '@/core/dtos/updateUser.dto';
 
 export interface AddUserUsecaseResponse {
   user: UserAggregate;
@@ -15,7 +16,7 @@ export type GetUserUsecase = (id: string, code: string) => Promise<AddUserUsecas
 export type MakeGetUser = (userRepository: UserRepository) => GetUserUsecase;
 
 export type UpdateUserUsecase = (updateUserParams: {
-  user: Partial<AddUserDto>;
+  user: Partial<UpdateUserDto>;
   identifier: Identifier;
   code: string;
 }) => Promise<AddUserUsecaseResponse>;

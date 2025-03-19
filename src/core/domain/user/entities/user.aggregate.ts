@@ -11,26 +11,26 @@ interface UserAggregateProps {
 }
 
 export class UserAggregate extends AggregateRoot<UserAggregateProps> {
-  private constructor(props: UserAggregateProps, aggregateId?: string) {
-    super(props, aggregateId);
+  private constructor(props: UserAggregateProps, entityId?: string) {
+    super(props, entityId);
   }
 
-  public static create(user: UserEntity, addresses: AddressEntity[], aggregateId?: string): UserAggregate {
-    const userAggregate = new UserAggregate({ user, addresses }, aggregateId);
+  public static create(user: UserEntity, addresses: AddressEntity[], entityId?: string): UserAggregate {
+    const userAggregate = new UserAggregate({ user, addresses }, entityId);
     const userEntity = userAggregate.getUser();
     const addressEntities = userAggregate.getAddresses();
     userAggregate.addDomainEvent(
-      new UserAggregateRegisteredEvent({ user: userEntity, addresses: addressEntities, aggregateId: userAggregate.aggregateId }),
+      new UserAggregateRegisteredEvent({ user: userEntity, addresses: addressEntities, entityId: userAggregate.entityId }),
     );
     return userAggregate;
   }
 
-  public static fromData({ email, name, addresses, status, aggregateId }: IUserModel): UserAggregate {
+  public static fromData({ email, name, addresses, status, entityId }: IUserModel): UserAggregate {
     const userEntity = UserEntity.fromData({ email, name, status });
     const addressEntities = addresses.map((address) => AddressEntity.fromData(address));
-    const userAggregate = new UserAggregate({ user: userEntity, addresses: addressEntities }, aggregateId);
+    const userAggregate = new UserAggregate({ user: userEntity, addresses: addressEntities }, entityId);
     userAggregate.addDomainEvent(
-      new UserAggregateRetrievedEvent({ user: userEntity, addresses: addressEntities, aggregateId: userAggregate.aggregateId }),
+      new UserAggregateRetrievedEvent({ user: userEntity, addresses: addressEntities, entityId: userAggregate.entityId }),
     );
 
     return userAggregate;

@@ -6,5 +6,5 @@ export interface IUserRepository {
   getUserByEmail: (email: string) => Promise<IUserModel | null>;
   updateUserByEmail: (email: string, values: Partial<IUserModel>) => Promise<IUserModel | null>;
   updateUserById: (id: string, values: Partial<IUserModel>) => Promise<IUserModel | null>;
-  updateUserByAggregateId: (aggregateId: string, values: Partial<IUserModel>) => Promise<IUserModel | null>;
+  updateUserByEntityId: (entityId: string, values: Partial<IUserModel>) => Promise<IUserModel | null>;
 }

@@ -19,11 +19,12 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       const userModel = await userRepository.addUser({
         email: userAggregate.getUser().getEmail().value,
         name: userAggregate.getUser().getName().value,
-        aggregateId: userAggregate.aggregateId,
+        entityId: userAggregate.entityId,
         addresses: userAggregate.getAddresses().map((address) => ({
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,
+          entityId: address.entityId,
         })),
       });
 
