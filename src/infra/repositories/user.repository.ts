@@ -20,6 +20,8 @@ export class UserRepository extends BaseRepository<IUserModel> implements IUserR
 
   async addUser(user: IUserModel): Promise<IUserModel> {
     user.status = Status.PENDING;
+    user.kycStatus = Status.PENDING;
+    user.emailStatus = Status.PENDING;
 
     user.addresses = user.addresses.map((address) => {
       address.status = Status.PENDING;

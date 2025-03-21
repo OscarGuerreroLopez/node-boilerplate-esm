@@ -1,23 +1,27 @@
+import { Status } from '@/core/types/user';
 import { logger } from '@/shared/logger';
 
-export const mailFakeService = async (email: string, entityId: string): Promise<void> => {
-  await new Promise((resolve, reject) =>
+const logMeta = {
+  file: 'src/myapp/services/mailFakeService',
+  service: 'playground',
+  code: '',
+};
+
+export const mailFakeService = async (email: string, status: Status, entityId: string): Promise<void> => {
+  await new Promise((resolve) =>
     setTimeout(() => {
-      if (email === 'hola@hola.com') {
-        logger.warn(`[ MAIL SERVICE ${entityId}] email ${email} is high risk, check it please`, {
-          file: 'src/myapp/services/mailFakeService',
-          service: 'playground',
-          code: '',
-        });
-        reject(new Error(`[ MAIL SERVICE] email ${email} is high risk, check it please`));
-      } else {
-        logger.info(`[ MAIL SERVICE ${entityId} ] Result for email ${email} all good`, {
-          file: 'src/myapp/services/mailFakeService',
-          service: 'playground',
-          code: '',
-        });
-        resolve(`[ MAIL SERVICE] Result for email ${email} all good`);
-      }
-    }, 3000),
+      console.log('@@@ fake await');
+      resolve('ok');
+    }, 5000),
   );
+
+  if (status === Status.VERIFIED) {
+    return;
+  }
+
+  if (email === 'hola@hola.com') {
+    logger.warn(`[ MAIL SERVICE ${entityId}] email ${email} is high risk, check it please`, logMeta);
+  } else {
+    logger.info(`[ MAIL SERVICE ${entityId} ] Result for email ${email} all good`, logMeta);
+  }
 };

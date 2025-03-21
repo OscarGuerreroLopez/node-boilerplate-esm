@@ -1,23 +1,27 @@
+import { Status } from '@/core/types/user';
 import { logger } from '@/shared/logger';
 
-export const kycFakeService = async (name: string, entityId: string): Promise<void> => {
-  await new Promise((resolve, reject) =>
+const logMeta = {
+  file: 'src/myapp/services/kycFake.service.ts',
+  service: 'playground',
+  code: '',
+};
+
+export const kycFakeService = async (name: string, status: Status, entityId: string): Promise<void> => {
+  await new Promise((resolve) =>
     setTimeout(() => {
-      if (name === 'dummy') {
-        logger.info(`[ KYC SERVICE ${entityId} ] Name cannot be "dummy"`, {
-          file: 'src/myapp/services/kyc.service.ts',
-          service: 'playground',
-          code: '',
-        });
-        reject(new Error('[ KYC SERVICE ] Name cannot be "dummy"'));
-      } else {
-        logger.info(`[ KYC SERVICE ${entityId} ] Result for name ${name} all good`, {
-          file: 'src/myapp/services/kyc.service.ts',
-          service: 'playground',
-          code: '',
-        });
-        resolve(`[ KYC SERVICE ] Result for name ${name} all good`);
-      }
+      console.log('@@@ fake await');
+      resolve('ok');
     }, 5000),
   );
+
+  if (status === Status.VERIFIED) {
+    return;
+  }
+
+  if (name === 'dummy') {
+    logger.warn(`[ KYC SERVICE ${entityId} ] Name cannot be "dummy"`, logMeta);
+  } else {
+    logger.info(`[ KYC SERVICE ${entityId} ] Result for name ${name} all good`, logMeta);
+  }
 };

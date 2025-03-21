@@ -34,6 +34,14 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
         userAggregate.getUser().changeStatus(userModel.status);
       }
 
+      if (userModel.kycStatus != null) {
+        userAggregate.getUser().changeKycStatus(userModel.kycStatus);
+      }
+
+      if (userModel.emailStatus != null) {
+        userAggregate.getUser().changeEmailStatus(userModel.emailStatus);
+      }
+
       userAggregate.getAddresses().forEach((address, index) => {
         address.changeStreet(userModel.addresses[index].street);
         address.changeCity(userModel.addresses[index].city);

@@ -14,6 +14,8 @@ export interface IUserModel {
   email: string;
   status?: Status;
   addresses: IAddressModel[];
+  kycStatus?: Status;
+  emailStatus?: Status;
   createdAt?: Date;
   updatedAt?: Date;
   entityId: string;
