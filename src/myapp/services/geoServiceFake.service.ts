@@ -26,6 +26,8 @@ const fakeAsyncDelay = async (): Promise<void> => {
   console.log('@@@ fake await');
 };
 
+const forbiddenCountries = ['somalia', 'burundi'];
+
 export const makeGeoServiceFake = (userRepository: UserRepository, updateUserUsecase: UpdateUserUsecase): GeoFakeService => {
   const geoFakeService: GeoFakeService = async (countries, entityId): Promise<void> => {
     try {
@@ -37,12 +39,12 @@ export const makeGeoServiceFake = (userRepository: UserRepository, updateUserUse
       for (const { country, status, entityId, ...rest } of countries) {
         if (status === Status.VERIFIED || status === Status.BLOCKED) {
           newAddresses.push({ ...rest, country, entityId, status });
-          continue; // Skip further checks
+          continue;
         }
 
         update = true;
 
-        if (country === 'country') {
+        if (forbiddenCountries.includes(country.toLowerCase())) {
           logger.warn(`[GEO SERVICE ${entityId}] Country ${country} is high risk, check it please`, logMeta);
           newAddresses.push({ ...rest, country, entityId, status: Status.BLOCKED });
         } else {
