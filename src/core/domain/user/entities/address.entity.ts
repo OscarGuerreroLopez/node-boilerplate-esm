@@ -1,6 +1,6 @@
 import { Entity } from '../../entities/entity';
 import { AddressVo } from '../../value-objects/address';
-import { AddAddressEvent } from '../events/add-address.event';
+import { AddressRegisteredEvent } from '../events/address-register.event';
 import { UserStatusVo } from '../../value-objects/status';
 import { type Status } from '@/core/types/user';
 
@@ -25,7 +25,7 @@ export class AddressEntity extends Entity<AddressProps> {
     const address = new AddressEntity({ street: streetVo, city: cityVo, country: countryVo, status: statusVo }, entityId);
 
     address.addDomainEvent(
-      new AddAddressEvent({ entityId: address.entityId, city: cityVo.value, country: countryVo.value, street: streetVo.value }),
+      new AddressRegisteredEvent({ entityId: address.entityId, city: cityVo.value, country: countryVo.value, street: streetVo.value }),
     );
     return address;
   }

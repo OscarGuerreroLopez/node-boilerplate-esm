@@ -10,6 +10,8 @@ export interface User {
   name: string;
   email: string;
   status: Status;
+  kycStatus: Status;
+  emailStatus: Status;
   addresses: Address[];
 }
 

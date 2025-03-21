@@ -1,9 +1,3 @@
-export abstract class DomainEvent {
-  readonly occurredAt: Date;
-  readonly entityId: string;
+import { BaseDomainEvent } from './base-domain.event';
 
-  constructor(entityId: string) {
-    this.occurredAt = new Date();
-    this.entityId = entityId;
-  }
-}
+export class DomainEvent extends BaseDomainEvent<string> {}

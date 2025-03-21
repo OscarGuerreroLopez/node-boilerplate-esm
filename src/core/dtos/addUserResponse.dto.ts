@@ -7,6 +7,8 @@ export class UserResponseDto implements User {
   email: string;
   status: Status;
   addresses: Address[];
+  kycStatus: Status;
+  emailStatus: Status;
 
   constructor({ user, id }: AddUserUsecaseResponse) {
     this.name = user.getUser().getName().value;
@@ -19,6 +21,8 @@ export class UserResponseDto implements User {
     }));
     this.status = user.getUser().getStatus().value;
     this.id = id;
+    this.kycStatus = user.getUser().getKycStatus().value;
+    this.emailStatus = user.getUser().getEmailStatus().value;
   }
 
   public static create(userAggregate: AddUserUsecaseResponse): User {

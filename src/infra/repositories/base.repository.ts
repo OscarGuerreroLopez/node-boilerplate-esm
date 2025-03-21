@@ -77,13 +77,17 @@ export abstract class BaseRepository<T> {
   protected async updateOne(where: Partial<T>, values: Partial<T>): Promise<NonNullable<T> | null> {
     await this.initializeCollection();
 
+    if (where != null && '_id' in where && typeof where._id === 'string') {
+      where = { ...where, _id: new ObjectId(where._id) };
+    }
+
     const doc = await this._collection.findOne(where);
 
     if (doc == null) {
       return null;
     }
 
-    const cleanValues = Object.fromEntries(Object.entries(values).filter(([_, value]) => value !== undefined));
+    const cleanValues = removeUndefinedDeep(values);
 
     const newItem = { ...doc, ...cleanValues, updatedAt: new Date() } as unknown as T;
 
@@ -97,4 +101,20 @@ export abstract class BaseRepository<T> {
 
     return newItem ?? null;
   }
+}
+function removeUndefinedDeep<T>(obj: T): T {
+  if (obj === null || obj === undefined) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefinedDeep) as T;
+  }
+  if (typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => [key, removeUndefinedDeep(value)]),
+    ) as T;
+  }
+  return obj;
 }

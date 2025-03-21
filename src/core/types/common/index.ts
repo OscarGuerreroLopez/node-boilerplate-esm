@@ -14,3 +14,5 @@ export interface BaseErrorArgs {
   isOperational?: boolean;
   validationErrors?: ValidationType[];
 }
+
+export type Identifier = { type: 'id'; value: string } | { type: 'entityId'; value: string };

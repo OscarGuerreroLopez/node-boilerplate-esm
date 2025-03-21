@@ -5,7 +5,8 @@ import { checkMongoDatabase } from '../services';
 import { type MetaResponseDto, type SuccessResponse } from '@/core/dtos/response.dto';
 import { AddUserDto } from '@/core/dtos/addUser.dto';
 import { UserResponseDto } from '@/core/dtos/addUserResponse.dto';
-import { addUserUsecase, getUserUsecase } from '../usecases';
+import { addUserUsecase, getUserUsecase, updateUserUsecase } from '../usecases';
+import { UpdateUserDto } from '@/core/dtos/updateUser.dto';
 
 export class MyAppController {
   public getMeta = (req: CustomRequest, res: Response<SuccessResponse<MetaResponseDto>>, next: NextFunction): void => {
@@ -36,6 +37,34 @@ export class MyAppController {
     }
 
     addUserUsecase({ user: dto, code })
+      .then((result) => {
+        res.json({
+          serviceName: envs.SERVICE_NAME,
+          data: { ...UserResponseDto.create(result), code },
+        });
+      })
+      .catch(next);
+  };
+
+  public updateUser = (
+    req: CustomRequest,
+    res: Response<SuccessResponse<UserResponseDto & { code: string }>>,
+    next: NextFunction,
+  ): void => {
+    const { code } = req;
+
+    const { identifier, ...user } = UpdateUserDto.create(req.body);
+
+    if (code == null) {
+      next(new Error('Code is required'));
+      return;
+    }
+
+    updateUserUsecase({
+      user,
+      code,
+      identifier,
+    })
       .then((result) => {
         res.json({
           serviceName: envs.SERVICE_NAME,

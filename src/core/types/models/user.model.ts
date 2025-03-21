@@ -1,12 +1,22 @@
-import { type Status, type Address } from '../user';
+import { type Status } from '../user';
+
+export interface IAddressModel {
+  street: string;
+  city: string;
+  country: string;
+  status?: Status;
+  entityId?: string;
+}
 
 export interface IUserModel {
   _id?: string;
   name: string;
   email: string;
   status?: Status;
-  addresses: Address[];
+  addresses: IAddressModel[];
+  kycStatus?: Status;
+  emailStatus?: Status;
   createdAt?: Date;
   updatedAt?: Date;
-  aggregateId: string;
+  entityId: string;
 }

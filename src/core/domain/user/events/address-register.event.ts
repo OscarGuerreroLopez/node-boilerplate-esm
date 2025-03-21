@@ -1,18 +1,18 @@
 import { DomainEvent } from '../../events/domain.event';
 
-interface AddAddressEventProps {
+interface AddressRegisteredEventProps {
   entityId: string;
   city: string;
   country: string;
   street: string;
 }
 
-export class AddAddressEvent extends DomainEvent {
+export class AddressRegisteredEvent extends DomainEvent {
   public readonly city: string;
   public readonly country: string;
   public readonly street: string;
 
-  constructor({ entityId, city, country, street }: AddAddressEventProps) {
+  constructor({ entityId, city, country, street }: AddressRegisteredEventProps) {
     super(entityId);
     this.city = city;
     this.country = country;
