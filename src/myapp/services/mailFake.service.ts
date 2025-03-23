@@ -20,11 +20,11 @@ export const makeMailFakeService = (userRepository: UserRepository): MailFakeSer
   const mailFakeService: MailFakeService = async ({ entityId, user }): Promise<void> => {
     await fakeAsyncDelay();
 
-    const status = user.getStatus().value;
     const email = user.getEmail().value;
     const userName = user.getName().value;
+    const emailStatus = user.getEmailStatus().value;
 
-    if (status === Status.VERIFIED) {
+    if (emailStatus === Status.VERIFIED || emailStatus === Status.BLOCKED) {
       return;
     }
 
