@@ -1,18 +1,18 @@
+import { DomainEvent } from '../../events/domain.event';
 import { type AddressEntity } from '../entities/address.entity';
 import { type UserEntity } from '../entities/user.entity';
-import { AggregateDomainEvent } from '../../events/aggregate-domain.event';
 
 interface UserAggregateRegisteredEventProps {
-  aggregateId: string;
+  entityId: string;
   user: UserEntity;
   addresses: AddressEntity[];
 }
 
-export class UserAggregateRegisteredEvent extends AggregateDomainEvent {
+export class UserAggregateRegisteredEvent extends DomainEvent {
   public readonly user: UserEntity;
   public readonly addresses: AddressEntity[];
-  constructor({ user, addresses, aggregateId }: UserAggregateRegisteredEventProps) {
-    super(aggregateId);
+  constructor({ user, addresses, entityId }: UserAggregateRegisteredEventProps) {
+    super(entityId);
     this.user = user;
     this.addresses = addresses;
   }

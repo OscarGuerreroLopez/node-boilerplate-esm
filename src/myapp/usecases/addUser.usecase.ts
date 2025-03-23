@@ -1,6 +1,5 @@
 import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { UserEntity } from '@/core/domain/user/entities/user.entity';
-import { DomainAggregateEventDispatcher } from '@/core/domain/events/domain-aggregate-dispatcher.event';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
@@ -20,11 +19,12 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       const userModel = await userRepository.addUser({
         email: userAggregate.getUser().getEmail().value,
         name: userAggregate.getUser().getName().value,
-        aggregateId: userAggregate.aggregateId,
+        entityId: userAggregate.entityId,
         addresses: userAggregate.getAddresses().map((address) => ({
           street: address.getStreet().value,
           city: address.getCity().value,
           country: address.getCountry().value,
+          entityId: address.entityId,
         })),
       });
 
@@ -32,6 +32,14 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
       userAggregate.getUser().changeEmail(userModel.email);
       if (userModel.status != null) {
         userAggregate.getUser().changeStatus(userModel.status);
+      }
+
+      if (userModel.kycStatus != null) {
+        userAggregate.getUser().changeKycStatus(userModel.kycStatus);
+      }
+
+      if (userModel.emailStatus != null) {
+        userAggregate.getUser().changeEmailStatus(userModel.emailStatus);
       }
 
       userAggregate.getAddresses().forEach((address, index) => {
@@ -46,16 +54,10 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
         }
       });
 
-      const allEvents = [...userEntity.getDomainEvents(), ...addressEntities.flatMap((address) => address.getDomainEvents())];
-
-      for (const event of allEvents) {
-        DomainEventDispatcher.dispatch(event);
-      }
-
       const allUserAggregatedEvent = [...userAggregate.getDomainEvents()];
 
       for (const event of allUserAggregatedEvent) {
-        DomainAggregateEventDispatcher.dispatch(event);
+        DomainEventDispatcher.dispatch(event);
       }
 
       userEntity.clearDomainEvents();

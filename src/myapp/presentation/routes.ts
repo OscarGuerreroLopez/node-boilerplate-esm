@@ -10,6 +10,7 @@ export const AppRoutes = {
     router.get('/meta', controller.getMeta);
     router.post('/add-user', controller.addUser);
     router.get('/:id', controller.getUser);
+    router.put('/update-user', controller.updateUser);
 
     return router;
   },

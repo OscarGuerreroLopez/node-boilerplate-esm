@@ -9,6 +9,8 @@ interface UserProps {
   email: EmailVo;
   name: NameVo;
   status: UserStatusVo;
+  kycStatus: UserStatusVo;
+  emailStatus: UserStatusVo;
 }
 
 export class UserEntity extends Entity<UserProps> {
@@ -16,15 +18,27 @@ export class UserEntity extends Entity<UserProps> {
     super(props, entityId);
   }
 
-  /** 📌 Factory method to create a new user */
-  public static create({ email, name, status }: { email: string; name: string; status?: Status }, entityId?: string): UserEntity {
+  public static create(
+    {
+      email,
+      name,
+      status,
+      kycStatus,
+      emailStatus,
+    }: { email: string; name: string; status?: Status; kycStatus?: Status; emailStatus?: Status },
+    entityId?: string,
+  ): UserEntity {
     const emailVo = EmailVo.create(email);
     const nameVo = NameVo.create(name);
     const statusVo = UserStatusVo.create(status);
+    const kycStatusVo = UserStatusVo.create(kycStatus);
+    const emailStatusVo = UserStatusVo.create(emailStatus);
 
-    const user = new UserEntity({ email: emailVo, name: nameVo, status: statusVo }, entityId);
+    const user = new UserEntity(
+      { email: emailVo, name: nameVo, status: statusVo, kycStatus: kycStatusVo, emailStatus: emailStatusVo },
+      entityId,
+    );
 
-    // Raise an event!
     user.addDomainEvent(
       new UserRegisteredEvent({ entityId: user.entityId, email: emailVo.value, name: nameVo.value, status: statusVo.value }),
     );
@@ -32,12 +46,24 @@ export class UserEntity extends Entity<UserProps> {
     return user;
   }
 
-  public static fromData(data: { email: string; name: string; status?: Status; entityId?: string }): UserEntity {
+  public static fromData(data: {
+    email: string;
+    name: string;
+    status?: Status;
+    entityId?: string;
+    kycStatus?: Status;
+    emailStatus?: Status;
+  }): UserEntity {
     const emailVo = EmailVo.create(data.email);
     const nameVo = NameVo.create(data.name);
     const statusVo = UserStatusVo.create(data.status);
+    const kycStatusVo = UserStatusVo.create(data.kycStatus);
+    const emailStatusVo = UserStatusVo.create(data.emailStatus);
 
-    return new UserEntity({ email: emailVo, name: nameVo, status: statusVo }, data.entityId);
+    return new UserEntity(
+      { email: emailVo, name: nameVo, status: statusVo, kycStatus: kycStatusVo, emailStatus: emailStatusVo },
+      data.entityId,
+    );
   }
 
   public getName(): NameVo {
@@ -50,6 +76,14 @@ export class UserEntity extends Entity<UserProps> {
 
   public getStatus(): UserStatusVo {
     return this.props.status;
+  }
+
+  public getKycStatus(): UserStatusVo {
+    return this.props.kycStatus;
+  }
+
+  public getEmailStatus(): UserStatusVo {
+    return this.props.emailStatus;
   }
 
   public changeName(name: string): this {
@@ -79,6 +113,26 @@ export class UserEntity extends Entity<UserProps> {
     }
 
     this.props.status = statusVo;
+    return this;
+  }
+
+  public changeKycStatus(status: Status): this {
+    const statusVo = UserStatusVo.create(status);
+    if (this.props.kycStatus.equals(statusVo)) {
+      return this;
+    }
+
+    this.props.kycStatus = statusVo;
+    return this;
+  }
+
+  public changeEmailStatus(status: Status): this {
+    const statusVo = UserStatusVo.create(status);
+    if (this.props.emailStatus.equals(statusVo)) {
+      return this;
+    }
+
+    this.props.emailStatus = statusVo;
     return this;
   }
 }
