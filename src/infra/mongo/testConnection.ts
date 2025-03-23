@@ -41,7 +41,7 @@ export const TestConnection = ((): MongoDatabase => {
           file: 'testConnection.ts',
           function: 'createConnection',
           code: '',
-        }); // special case for some reason
+        });
       }
       throw error;
     }

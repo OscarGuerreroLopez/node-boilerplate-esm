@@ -11,20 +11,17 @@ export abstract class Entity<T> {
       throw new Error('Invalid entity ID format');
     }
     this.entityId = entityId ?? uuidv4();
-    this.props = props; // Ensure immutability
+    this.props = props;
   }
 
-  /** 📌 Add a new domain event */
   protected addDomainEvent(event: DomainEvent): void {
     this.domainEvents.push(event);
   }
 
-  /** 📌 Retrieve all events */
   public getDomainEvents(): DomainEvent[] {
     return this.domainEvents;
   }
 
-  /** 📌 Clear events after dispatching them */
   public clearDomainEvents(): void {
     this.domainEvents = [];
   }

@@ -27,7 +27,7 @@ export class LoggerMiddleware {
           responseBody = body;
         }
 
-        return originalSend(body); // Call the original `send` method
+        return originalSend(body);
       };
 
       if (!req.path.includes('meta')) {

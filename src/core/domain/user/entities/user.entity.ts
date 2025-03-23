@@ -18,7 +18,6 @@ export class UserEntity extends Entity<UserProps> {
     super(props, entityId);
   }
 
-  /** 📌 Factory method to create a new user */
   public static create(
     {
       email,
@@ -40,7 +39,6 @@ export class UserEntity extends Entity<UserProps> {
       entityId,
     );
 
-    // Raise an event!
     user.addDomainEvent(
       new UserRegisteredEvent({ entityId: user.entityId, email: emailVo.value, name: nameVo.value, status: statusVo.value }),
     );

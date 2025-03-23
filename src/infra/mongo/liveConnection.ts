@@ -33,7 +33,7 @@ export const LiveConnection = ((): MongoDatabase => {
         file: 'liveConnection.ts',
         function: 'createConnection',
         code: '',
-      }); // special case for some reason
+      });
 
       throw error;
     }

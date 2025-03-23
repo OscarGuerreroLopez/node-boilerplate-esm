@@ -43,7 +43,6 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
   public validate(): void {
     const errors: ValidationType[] = [];
 
-    // Ensure identifier follows the expected format
     if (this.identifier?.type.length === 0 || this.identifier?.value.length === 0) {
       errors.push({ fields: ['identifier'], constraint: 'Identifier must be properly formatted' });
     } else if (this.identifier?.type !== 'id' && this.identifier?.type !== 'entityId') {
