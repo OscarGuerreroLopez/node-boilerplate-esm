@@ -10,6 +10,8 @@ export interface UpdateUserDtoProps {
   email?: string;
   addresses?: Address[];
   status?: Status;
+  kycStatus?: Status;
+  emailStatus?: Status;
 }
 
 export class UpdateUserDto implements CoreDto<Partial<User>> {
@@ -18,8 +20,10 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
   public readonly email?: string;
   public readonly addresses?: Array<Partial<Address>>;
   public readonly status?: Status;
+  public readonly kycStatus?: Status;
+  public readonly emailStatus?: Status;
 
-  constructor({ identifier, name, email, addresses, status }: UpdateUserDtoProps) {
+  constructor({ identifier, name, email, addresses, status, kycStatus, emailStatus }: UpdateUserDtoProps) {
     this.identifier = identifier;
     this.name = name;
     this.email = email;
@@ -30,6 +34,8 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
       status: address.status,
     }));
     this.status = status;
+    this.kycStatus = kycStatus;
+    this.emailStatus = emailStatus;
 
     this.validate();
   }
@@ -50,7 +56,7 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
   }
 
   public static create(input: unknown): UpdateUserDto {
-    const { identifier, name, email, addresses, status } = input as Record<string, any>;
-    return new UpdateUserDto({ identifier, name, email, addresses, status });
+    const { identifier, name, email, addresses, status, kycStatus, emailStatus } = input as Record<string, any>;
+    return new UpdateUserDto({ identifier, name, email, addresses, status, kycStatus, emailStatus });
   }
 }

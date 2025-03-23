@@ -1,11 +1,7 @@
 import { logger } from '@/shared/logger';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { UserAggregateRegisteredEvent } from '@/core/domain/user/events/user-aggregate-register.event';
-import { UserAggregateRetrievedEvent } from '@/core/domain/user/events/aggregate-retrieved.event';
-// import { UserRegisteredEvent } from '@/core/domain/user/events/user-register.event';
-import { kycFakeService } from '../kycFake.service';
-import { mailFakeService } from '../mailFake.service';
-import { geoFakeService } from '..';
+import { geoFakeService, kycFakeService, mailFakeService } from '..';
 
 const logMeta = {
   file: 'src/core/domain/handlers/user.ts',
@@ -14,56 +10,28 @@ const logMeta = {
 };
 
 DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
-  const userName = event.user.getName().value;
   const userEmail = event.user.getEmail().value;
-  const kycStatus = event.user.getKycStatus().value;
-  const mailStatus = event.user.getEmailStatus().value;
 
   logger.info(`[ USER HANDLER ] new registered user event ${userEmail} `, logMeta);
 
-  const userAddresses = event.addresses.map((address) => {
-    return {
-      country: address.getCountry().value,
-      entityId: address.entityId,
-      status: address.getStatus().value,
-      city: address.getCity().value,
-      street: address.getStreet().value,
-    };
-  });
   const entityId = event.id;
 
-  void kycFakeService(userName, kycStatus, entityId);
+  void kycFakeService({ user: event.user, entityId });
 
-  void mailFakeService(userEmail, mailStatus, entityId);
+  void geoFakeService({ user: event.user, addresses: event.addresses, entityId });
 
-  void geoFakeService(userAddresses, entityId);
+  void mailFakeService({ user: event.user, entityId });
 });
 
-DomainEventDispatcher.register(UserAggregateRetrievedEvent, (event) => {
-  const userName = event.user.getName().value;
-  const userEmail = event.user.getEmail().value;
-  const kycStatus = event.user.getKycStatus().value;
-  const mailStatus = event.user.getEmailStatus().value;
+// DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
+//   const userEmail = event.user.getEmail().value;
 
-  logger.info(`[ USER HANDLER ] user retrieved ${userName} email: ${userEmail} `, logMeta);
+//   logger.info(`[ USER HANDLER ] new registered user event ${userEmail} `, logMeta);
 
-  const userAddresses = event.addresses.map((address) => {
-    return {
-      country: address.getCountry().value,
-      entityId: address.entityId,
-      status: address.getStatus().value,
-      city: address.getCity().value,
-      street: address.getStreet().value,
-    };
-  });
-  const entityId = event.id;
+//   const entityId = event.id;
 
-  void kycFakeService(userName, kycStatus, entityId);
-
-  void mailFakeService(userEmail, mailStatus, entityId);
-
-  void geoFakeService(userAddresses, entityId);
-});
+//   void geoFakeService({ user: event.user, addresses: event.addresses, entityId });
+// });
 
 // DomainEventDispatcher.register(UserRegisteredEvent, (event) => {
 //   kycFakeService(event.name)

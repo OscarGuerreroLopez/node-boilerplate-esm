@@ -4,7 +4,7 @@ import { PrimitiveValueObject } from 'micro-library-ai';
 export class UserStatusVo extends PrimitiveValueObject<Status> {
   static create(value?: Status): UserStatusVo {
     if (value == null) {
-      return new UserStatusVo(Status.UNVERIFIED);
+      return new UserStatusVo(Status.PENDING);
     }
 
     if (!Object.values(Status).includes(value)) {

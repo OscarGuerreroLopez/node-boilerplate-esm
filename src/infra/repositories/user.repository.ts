@@ -18,6 +18,11 @@ export class UserRepository extends BaseRepository<IUserModel> implements IUserR
     return userModel;
   }
 
+  async getUserByEntityId(entityId: string): Promise<IUserModel | null> {
+    const userModel = await this.findOne({ entityId });
+    return userModel;
+  }
+
   async addUser(user: IUserModel): Promise<IUserModel> {
     user.status = Status.PENDING;
     user.kycStatus = Status.PENDING;

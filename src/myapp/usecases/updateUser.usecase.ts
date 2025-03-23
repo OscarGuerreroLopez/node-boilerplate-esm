@@ -9,37 +9,43 @@ import { logger } from '@/shared/logger';
 export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUserUsecase => {
   const updateUserUsecase: UpdateUserUsecase = async ({ user, identifier, code }) => {
     try {
-      let userModel;
-      let userStatus;
+      let userStatus = user.status;
+      let kycStatus = user.kycStatus;
+      let emailStatus = user.emailStatus;
 
-      if (user.name != null || user.email != null) {
-        userStatus = Status.PENDING;
-      } else {
-        userStatus = user.status;
-      }
+      if (user.name != null) userStatus = kycStatus = Status.PENDING;
+
+      if (user.email != null) userStatus = emailStatus = Status.PENDING;
+
+      const addresses: IAddressModel[] =
+        user.addresses?.map(({ street, city, country, status }) => {
+          if (street === undefined || city === undefined || country === undefined) {
+            throw new Error('Street, city, and country must be defined in address');
+          }
+          return {
+            street,
+            city,
+            country,
+            status: Status.PENDING,
+          };
+        }) ?? [];
 
       const userToUpdate = {
         name: user.name,
         email: user.email,
         status: userStatus,
-        addresses: user.addresses?.map((address) => {
-          return {
-            street: address.street,
-            city: address.city,
-            country: address.country,
-            status: address.status ?? Status.PENDING,
-          };
-        }) as IAddressModel[],
+        kycStatus,
+        emailStatus,
+        ...(addresses != null && addresses.length > 0 && { addresses }),
       };
 
-      if (identifier.type === 'id') {
-        userModel = await userRepository.updateUserById(identifier.value, userToUpdate);
-      } else {
-        userModel = await userRepository.updateUserByEntityId(identifier.value, userToUpdate);
-      }
+      const userModel =
+        identifier.type === 'id'
+          ? await userRepository.updateUserById(identifier.value, userToUpdate)
+          : await userRepository.updateUserByEntityId(identifier.value, userToUpdate);
 
       if (userModel == null) {
-        throw WarnError.notFound('User');
+        throw WarnError.notFound(`unable to update user ${user.email}`);
       }
 
       const userAggregate = UserAggregate.fromData({
@@ -47,6 +53,8 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUse
         name: userModel.name,
         addresses: userModel.addresses,
         status: userModel.status,
+        kycStatus: userModel.kycStatus,
+        emailStatus: userModel.emailStatus,
         entityId: userModel.entityId,
       });
 
