@@ -21,7 +21,7 @@ export const LiveConnection = ((): MongoDatabase => {
       await mongoClient.connect();
       db = mongoClient.db(envs.MONGO_DATABASE);
 
-      logger.info('test Live DB activated', {
+      logger.info('Live DB activated', {
         service: 'boilerplate',
         file: 'liveConnection.ts',
         function: 'createConnection',
