@@ -1,15 +1,15 @@
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
-import { AggregateRoot } from '../../entities/aggregate';
 import { UserAggregateRegisteredEvent } from '../events/user-aggregate-register.event';
 import { type IUserModel } from '@/core/types/models/user.model';
+import { Entity } from '../../entities/entity';
 
 interface UserAggregateProps {
   user: UserEntity;
   addresses: AddressEntity[];
 }
 
-export class UserAggregate extends AggregateRoot<UserAggregateProps> {
+export class UserAggregate extends Entity<UserAggregateProps> {
   private constructor(props: UserAggregateProps, entityId?: string) {
     super(props, entityId);
   }

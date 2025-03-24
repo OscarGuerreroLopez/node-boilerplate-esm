@@ -96,3 +96,17 @@ The following environment variables are required to run the application. You mus
 
 ```bash
 yarn dev
+```
+```bash
+yarn build
+yarn start  
+```
+
+### Docker
+
+```bash
+ yarn build
+ docker-compose --env-file .docker.env  up -d --build 
+ docker-compose down --remove-orphans   
+```
+  
