@@ -16,3 +16,27 @@ export interface BaseErrorArgs {
 }
 
 export type Identifier = { type: 'id'; value: string } | { type: 'entityId'; value: string };
+
+export type SanitiseBody = (unsanitisedBody: IObjectLiteral) => IObjectLiteral;
+
+export enum Severity {
+  DEBUG = 'debug',
+  INFO = 'info',
+  WARN = 'warn',
+  ERROR = 'error',
+}
+
+export interface LoggerData {
+  service: string;
+  file: string;
+  method?: string;
+  code: string;
+  [key: string]: unknown;
+}
+
+export interface Logger {
+  debug: (message: string, data: LoggerData) => void;
+  info: (message: string, data: LoggerData) => void;
+  warn: (message: string, data: LoggerData) => void;
+  error: (message: string, data: LoggerData) => void;
+}

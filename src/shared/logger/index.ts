@@ -1,6 +1,7 @@
 import { envs } from '@/core/config/env';
 import { NodeEnvEnum, type NodeEnv } from '@/core/types/common';
-import { makeMicroLogger, makeMicroLoggerV2, sanitiser } from 'micro-library-ai';
+import { sanitiser } from '../helpers/sanitiser';
+import { makeMicroLogger, makeMicroLoggerV2 } from './microLogger';
 
 export const logger =
   envs.NODE_ENV === NodeEnvEnum.DEVELOPMENT

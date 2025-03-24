@@ -1,8 +1,9 @@
-import { type ValidationType, type CoreDto } from 'micro-library-ai';
 import { type Status, type Address, type User } from '../types/user';
 import { ZERO } from '../types/constants';
 import { WarnError } from '../errors';
 import { type Identifier } from '../types/common';
+import { type CoreDto } from './core.dto';
+import { type ValidationType } from '../types/http';
 
 export interface UpdateUserDtoProps {
   identifier: Identifier;
