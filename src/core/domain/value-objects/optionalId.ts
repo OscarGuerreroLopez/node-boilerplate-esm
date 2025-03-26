@@ -1,4 +1,4 @@
-import { PrimitiveValueObject } from 'micro-library-ai';
+import { PrimitiveValueObject } from './primitiveValueObject';
 
 export class OptionalIdVo extends PrimitiveValueObject<string> {
   static create(value?: string): OptionalIdVo {

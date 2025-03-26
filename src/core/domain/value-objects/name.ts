@@ -1,5 +1,6 @@
-import { ONE_HUNDRED, PrimitiveValueObject, THREE } from 'micro-library-ai';
+import { ONE_HUNDRED, THREE } from '@/core/types/constants';
 import { WarnError } from '../../errors';
+import { PrimitiveValueObject } from './primitiveValueObject';
 
 export class NameVo extends PrimitiveValueObject<string> {
   static create(value: string): NameVo {

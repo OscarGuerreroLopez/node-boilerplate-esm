@@ -1,5 +1,5 @@
 import { Status } from '@/core/types/user';
-import { PrimitiveValueObject } from 'micro-library-ai';
+import { PrimitiveValueObject } from './primitiveValueObject';
 
 export class UserStatusVo extends PrimitiveValueObject<Status> {
   static create(value?: Status): UserStatusVo {

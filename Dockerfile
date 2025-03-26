@@ -1,5 +1,5 @@
 # Use Node 21.14 or above
-FROM node:20.12
+FROM node:20.19.0
 
 # Set working directory in the container
 WORKDIR /src

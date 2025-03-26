@@ -1,5 +1,5 @@
-import { PrimitiveValueObject } from 'micro-library-ai';
 import { WarnError } from '../../errors';
+import { PrimitiveValueObject } from './primitiveValueObject';
 
 export class EmailVo extends PrimitiveValueObject<string> {
   private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
