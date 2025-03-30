@@ -51,3 +51,7 @@ logs
 *copy*
 *.txt
 .vercel
+
+script*
+
+*.db

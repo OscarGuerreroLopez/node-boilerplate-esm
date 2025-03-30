@@ -5,6 +5,7 @@ import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
 import { AddressEntity } from '@/core/domain/user/entities/address.entity';
+import { type IMongoUserModel, type ISqlUserModel } from '@/core/types/models/user.model';
 
 export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
@@ -16,7 +17,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
 
       const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
-      const userModel = await userMongoRepository.addUser({
+      const userModel: IMongoUserModel | ISqlUserModel = {
         email: userAggregate.getUser().getEmail().value,
         name: userAggregate.getUser().getName().value,
         entityId: userAggregate.entityId,
@@ -26,21 +27,23 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
           country: address.getCountry().value,
           entityId: address.entityId,
         })),
-      });
+      };
 
-      const userSqlModel = await userSqlRepository.addUser({
-        email: userAggregate.getUser().getEmail().value,
-        name: userAggregate.getUser().getName().value,
-        entityId: userAggregate.entityId,
-        addresses: userAggregate.getAddresses().map((address) => ({
-          street: address.getStreet().value,
-          city: address.getCity().value,
-          country: address.getCountry().value,
-          entityId: address.entityId,
-        })),
-      });
+      const [mongoResult, sqlResult] = await Promise.allSettled([
+        userMongoRepository.addUser(userModel),
+        userSqlRepository.addUser(userModel),
+      ]);
 
-      console.log('@@@111', userSqlModel);
+      // Handle results
+      const userMongoModel = mongoResult.status === 'fulfilled' ? mongoResult.value : null;
+      const userSqlModel = sqlResult.status === 'fulfilled' ? sqlResult.value : null;
+
+      if (userMongoModel == null || userSqlModel == null) {
+        throw new WarnError({
+          message: 'cannot add user, check logs',
+          statusCode: 400,
+        });
+      }
 
       userAggregate.getUser().changeName(userModel.name);
       userAggregate.getUser().changeEmail(userModel.email);
@@ -80,7 +83,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
       });
       userAggregate.clearDomainEvents();
 
-      return { user: userAggregate, id: userModel._id };
+      return { user: userAggregate, id: userMongoModel._id };
     } catch (error) {
       logger.error(error instanceof Error ? error.message : JSON.stringify(error), {
         file: 'src/myapp/usecases/addUser.usecase.ts',

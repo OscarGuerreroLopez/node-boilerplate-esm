@@ -13,7 +13,17 @@ export class UserSqlRepository extends BaseRepository<ISqlUserModel> implements 
       return address;
     });
 
-    const userModel = await this.insert(user);
-    return userModel;
+    const transformedData = this.transformNestedRelations(user);
+    return await this.insert(transformedData);
+  }
+
+  protected transformNestedRelations(data: Partial<ISqlUserModel>): Partial<ISqlUserModel> {
+    if (data.addresses != null && Array.isArray(data.addresses)) {
+      return {
+        ...data,
+        addresses: { create: data.addresses } as any, // Explicitly cast to match Prisma format
+      };
+    }
+    return data;
   }
 }
