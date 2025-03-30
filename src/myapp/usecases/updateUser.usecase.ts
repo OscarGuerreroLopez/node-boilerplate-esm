@@ -2,11 +2,11 @@ import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.eve
 import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { WarnError } from '@/core/errors';
 import { type MakeUpdateUser, type UpdateUserUsecase } from '@/core/types/user/usecases';
-import { type IAddressModel } from '@/core/types/models/user.model';
+import { type IMongoAddressModel } from '@/core/types/models/user.model';
 import { Status } from '@/core/types/user';
 import { logger } from '@/shared/logger';
 
-export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUserUsecase => {
+export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository): UpdateUserUsecase => {
   const updateUserUsecase: UpdateUserUsecase = async ({ user, identifier, code }) => {
     try {
       let userStatus = user.status;
@@ -17,7 +17,7 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUse
 
       if (user.email != null) userStatus = emailStatus = Status.PENDING;
 
-      const addresses: IAddressModel[] =
+      const addresses: IMongoAddressModel[] =
         user.addresses?.map(({ street, city, country, status }) => {
           if (street === undefined || city === undefined || country === undefined) {
             throw new Error('Street, city, and country must be defined in address');
@@ -41,8 +41,8 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userRepository): UpdateUse
 
       const userModel =
         identifier.type === 'id'
-          ? await userRepository.updateUserById(identifier.value, userToUpdate)
-          : await userRepository.updateUserByEntityId(identifier.value, userToUpdate);
+          ? await userMongoRepository.updateUserById(identifier.value, userToUpdate)
+          : await userMongoRepository.updateUserByEntityId(identifier.value, userToUpdate);
 
       if (userModel == null) {
         throw WarnError.notFound(`unable to update user ${user.email}`);

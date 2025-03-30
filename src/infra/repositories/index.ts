@@ -1,3 +1,3 @@
 import { UserRepository } from './user.repository';
 
-export const userRepository = new UserRepository('users');
+export const userMongoRepository = new UserRepository('users');

@@ -16,14 +16,14 @@ export interface User {
 }
 
 export enum Status {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  PENDING = 'pending',
-  REJECTED = 'rejected',
-  DELETED = 'deleted',
-  CHECKING = 'checking',
-  VERIFIED = 'verified',
-  UNVERIFIED = 'unverified',
-  SUSPENDED = 'suspended',
-  BLOCKED = 'blocked',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
+  DELETED = 'DELETED',
+  CHECKING = 'CHECKING',
+  VERIFIED = 'VERIFIED',
+  UNVERIFIED = 'UNVERIFIED',
+  SUSPENDED = 'SUSPENDED',
+  BLOCKED = 'BLOCKED',
 }

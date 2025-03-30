@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Define the Status enum
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+  REJECTED
+  DELETED
+  CHECKING
+  VERIFIED
+  UNVERIFIED
+  SUSPENDED
+  BLOCKED
+}
+
+model users {
+  id          Int         @id @default(autoincrement()) // Primary key (auto-incremented integer)
+  entityId    String      @unique @default(uuid()) // Unique UUID for the entity
+  email       String      @unique // Unique email
+  name        String? // Optional name
+  addresses   addresses[] // Relation to Address
+  status      Status      @default(PENDING) // Status with default value
+  kycStatus   Status?     @default(PENDING) // Optional KYC status
+  emailStatus Status?     @default(PENDING) // Optional email status
+  createdAt   DateTime    @default(now()) // Timestamp when the record was created
+  updatedAt   DateTime    @updatedAt // Timestamp when the record was last updated
+
+  @@unique([id, entityId, email])
+}
+
+model addresses {
+  id        Int      @id @default(autoincrement()) // Primary key (auto-incremented integer)
+  entityId  String   @unique @default(uuid()) // Unique UUID for the entity
+  city      String // Required city
+  country   String // Required country
+  street    String // Required street
+  status    Status?  @default(PENDING) // Optional status
+  User      users?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    Int? // Optional foreign key to User
+  createdAt DateTime @default(now()) // Timestamp when the record was created
+  updatedAt DateTime @updatedAt // Timestamp when the record was last updated
+}

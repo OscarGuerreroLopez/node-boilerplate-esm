@@ -1,6 +1,6 @@
 import { type AddressEntity } from '@/core/domain/user/entities/address.entity';
 import { type UserEntity } from '@/core/domain/user/entities/user.entity';
-import { type IAddressModel } from '@/core/types/models/user.model';
+import { type IMongoAddressModel } from '@/core/types/models/user.model';
 import { Status } from '@/core/types/user';
 import { type UserRepository } from '@/infra/repositories/user.repository';
 import { logger } from '@/shared/logger';
@@ -28,7 +28,7 @@ export const makeGeoServiceFake = (userRepository: UserRepository): GeoFakeServi
       await fakeAsyncDelay();
 
       let update = false;
-      const newAddresses: IAddressModel[] = [];
+      const newAddresses: IMongoAddressModel[] = [];
 
       for (const address of addresses) {
         const status = address.getStatus().value;

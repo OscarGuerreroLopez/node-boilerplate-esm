@@ -15,12 +15,17 @@
     "build": "rimraf ./dist && tsc && tsc-alias",
     "lint": "eslint ./src/**/*.ts --fix",
     "format": "prettier --write ./**/*.{ts,json}",
-    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false --testPathPattern=src/__tests__ --testPathIgnorePatterns=dist"
+    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false --testPathPattern=src/__tests__ --testPathIgnorePatterns=dist",
+    "prisma:format": "prisma format",
+    "prisma:migrate:dev": "prisma migrate dev --name init",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.5.0",
     "cors": "^2",
     "dotenv": "^16",
     "env-var": "^7.5.0",
@@ -52,6 +57,7 @@
     "jest": "^29",
     "nodemon": "^3",
     "prettier": "^3",
+    "prisma": "^6.5.0",
     "ts-jest": "^29",
     "ts-node": "^10",
     "tsc-alias": "^1",

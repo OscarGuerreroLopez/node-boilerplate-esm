@@ -1,11 +1,11 @@
-import { type IAddressModel, type IUserModel } from '@/core/types/models/user.model';
+import { type IMongoAddressModel, type IMongoUserModel } from '@/core/types/models/user.model';
 import { type Status } from '@/core/types/user';
 
-export class UserModel implements IUserModel {
+export class UserModel implements IMongoUserModel {
   public name: string;
   public email: string;
   public entityId: string;
-  public addresses: IAddressModel[];
+  public addresses: IMongoAddressModel[];
   public kycStatus: Status;
   public status: Status;
   public emailStatus: Status;
@@ -26,7 +26,7 @@ export class UserModel implements IUserModel {
     name: string;
     email: string;
     entityId: string;
-    addresses: IAddressModel[];
+    addresses: IMongoAddressModel[];
     kycStatus: Status;
     status: Status;
     emailStatus: Status;

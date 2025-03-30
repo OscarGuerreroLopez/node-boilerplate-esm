@@ -6,7 +6,7 @@ import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecase
 import { logger } from '@/shared/logger';
 import { AddressEntity } from '@/core/domain/user/entities/address.entity';
 
-export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
+export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
       const userEntity = UserEntity.create(user);
@@ -16,7 +16,7 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
 
       const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
-      const userModel = await userRepository.addUser({
+      const userModel = await userMongoRepository.addUser({
         email: userAggregate.getUser().getEmail().value,
         name: userAggregate.getUser().getName().value,
         entityId: userAggregate.entityId,
@@ -27,6 +27,20 @@ export const makeAddUserUsecase: MakeAddUser = (userRepository) => {
           entityId: address.entityId,
         })),
       });
+
+      const userSqlModel = await userSqlRepository.addUser({
+        email: userAggregate.getUser().getEmail().value,
+        name: userAggregate.getUser().getName().value,
+        entityId: userAggregate.entityId,
+        addresses: userAggregate.getAddresses().map((address) => ({
+          street: address.getStreet().value,
+          city: address.getCity().value,
+          country: address.getCountry().value,
+          entityId: address.entityId,
+        })),
+      });
+
+      console.log('@@@111', userSqlModel);
 
       userAggregate.getUser().changeName(userModel.name);
       userAggregate.getUser().changeEmail(userModel.email);

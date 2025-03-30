@@ -4,10 +4,10 @@ import { WarnError } from '@/core/errors';
 import { type GetUserUsecase, type MakeGetUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
 
-export const makeGetUserUsecase: MakeGetUser = (userRepository) => {
+export const makeGetUserUsecase: MakeGetUser = (userMongoRepository) => {
   const getUserUsecase: GetUserUsecase = async (id, code) => {
     try {
-      const userModel = await userRepository.getUserById(id);
+      const userModel = await userMongoRepository.getUserById(id);
 
       if (userModel?.email == null || userModel?.name == null) {
         throw new WarnError({
