@@ -2,7 +2,7 @@ import { type AddressEntity } from '@/core/domain/user/entities/address.entity';
 import { type UserEntity } from '@/core/domain/user/entities/user.entity';
 import { type IMongoAddressModel } from '@/core/types/models/user.model';
 import { Status } from '@/core/types/user';
-import { type UserRepository } from '@/infra/repositories/user.repository';
+import { type UserMongoRepository } from '@/infra/mongoRepositories/user.repository';
 import { logger } from '@/shared/logger';
 
 // fake service emulating an external service that gets the event
@@ -22,7 +22,7 @@ const fakeAsyncDelay = async (): Promise<void> => {
 
 const forbiddenCountries = ['somalia', 'burundi'];
 
-export const makeGeoServiceFake = (userRepository: UserRepository): GeoFakeService => {
+export const makeGeoServiceFake = (userMongoRepository: UserMongoRepository): GeoFakeService => {
   const geoFakeService: GeoFakeService = async ({ entityId, user, addresses }): Promise<void> => {
     try {
       await fakeAsyncDelay();
@@ -53,7 +53,7 @@ export const makeGeoServiceFake = (userRepository: UserRepository): GeoFakeServi
       }
 
       if (update) {
-        await userRepository.updateUserByEntityId(entityId, {
+        await userMongoRepository.updateUserByEntityId(entityId, {
           addresses: newAddresses,
         });
 

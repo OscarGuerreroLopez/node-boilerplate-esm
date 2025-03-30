@@ -3,7 +3,7 @@ import { BaseRepository } from './base.repository';
 import { type IUserRepository } from '@/core/types/repositories/user.repository';
 import { Status } from '@/core/types/user';
 
-export class UserRepository extends BaseRepository<IMongoUserModel> implements IUserRepository {
+export class UserMongoRepository extends BaseRepository<IMongoUserModel> implements IUserRepository {
   protected async createIndexes(): Promise<void> {
     await this._collection.createIndex([{ userId: 1, email: 1 }, { entityId: -1 }], { unique: true, background: true });
   }

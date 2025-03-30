@@ -1,6 +1,6 @@
 import { type UserEntity } from '@/core/domain/user/entities/user.entity';
 import { Status } from '@/core/types/user';
-import { type UserRepository } from '@/infra/repositories/user.repository';
+import { type UserMongoRepository } from '@/infra/mongoRepositories/user.repository';
 import { logger } from '@/shared/logger';
 
 const logMeta = {
@@ -16,7 +16,7 @@ const fakeAsyncDelay = async (): Promise<void> => {
 
 type MailFakeService = (params: { user: UserEntity; entityId: string }) => Promise<void>;
 
-export const makeMailFakeService = (userRepository: UserRepository): MailFakeService => {
+export const makeMailFakeService = (userMongoRepository: UserMongoRepository): MailFakeService => {
   const mailFakeService: MailFakeService = async ({ entityId, user }): Promise<void> => {
     await fakeAsyncDelay();
 
@@ -36,7 +36,7 @@ export const makeMailFakeService = (userRepository: UserRepository): MailFakeSer
       logger.info(`[ MAIL SERVICE ${entityId} ] Result for email ${email} all good`, logMeta);
     }
 
-    await userRepository.updateUserByEntityId(entityId, {
+    await userMongoRepository.updateUserByEntityId(entityId, {
       emailStatus: user.getEmailStatus().value,
     });
 

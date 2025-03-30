@@ -34,7 +34,7 @@ export abstract class BaseRepository<T> {
   }
 
   protected async updateOne(where: Partial<T>, data: Partial<T>): Promise<T | null> {
-    return this._model.update({ where, data }).catch(() => null);
+    return this._model.update({ where, data });
   }
 
   protected abstract transformNestedRelations(data: Partial<T>): Partial<T>;

@@ -1,4 +1,4 @@
-import { userMongoRepository } from '@/infra/repositories';
+import { userMongoRepository } from '@/infra/mongoRepositories';
 import { makeAddUserUsecase } from './addUser.usecase';
 import { makeGetUserUsecase } from './getUser.usecase';
 import { makeUpdateUserUsecase } from './updateUser.usecase';

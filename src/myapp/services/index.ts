@@ -2,7 +2,7 @@ import { Database } from '@/infra/mongo';
 import { makeChecMongoDataBase } from './check-db.service';
 import { makeGeoServiceFake } from './geoServiceFake.service';
 import { makeKycServiceFake } from './kycFake.service';
-import { userMongoRepository } from '@/infra/repositories';
+import { userMongoRepository } from '@/infra/mongoRepositories';
 import { makeMailFakeService } from './mailFake.service';
 
 export const checkMongoDatabase = makeChecMongoDataBase(Database);
