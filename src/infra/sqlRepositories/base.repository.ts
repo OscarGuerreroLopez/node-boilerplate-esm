@@ -50,8 +50,6 @@ export abstract class BaseRepository<T> {
 
     const newItem = removeKeys({ ...doc, ...cleanValues }, ['id', 'entityId', 'createdAt', 'updatedAt']);
 
-    console.log('@@@111', { where, data: { ...newItem } });
-
     const result = await this._model.update({ where, data: { ...newItem } });
     return result ?? null;
   }
