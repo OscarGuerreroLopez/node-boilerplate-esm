@@ -12,4 +12,6 @@ export interface IUserRepository {
 
 export interface IUserSqlRepository {
   addUser: (user: ISqlUserModel) => Promise<ISqlUserModel>;
+  updateUserById: (id: string, values: Partial<ISqlUserModel>) => Promise<ISqlUserModel | null>;
+  updateUserByEntityId: (entityId: string, values: Partial<ISqlUserModel>) => Promise<ISqlUserModel | null>;
 }

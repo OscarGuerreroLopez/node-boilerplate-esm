@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { ObjectId, type Collection } from 'mongodb';
 import { Database } from '../mongo';
+import { removeUndefinedDeep } from '@/shared/helpers/remove-undefined';
 
 export abstract class BaseRepository<T> {
   protected _collection!: Collection;
@@ -20,12 +21,12 @@ export abstract class BaseRepository<T> {
     }
   }
 
-  protected async findOne(where: Partial<T>): Promise<T> {
+  protected async findOne(where: Partial<T>): Promise<NonNullable<T> | null> {
     await this.initializeCollection();
 
     const result = (await this._collection.findOne(where)) as T;
 
-    return result;
+    return result ?? null;
   }
 
   protected async findById(id: string): Promise<NonNullable<T> | null> {
@@ -81,7 +82,7 @@ export abstract class BaseRepository<T> {
       where = { ...where, _id: new ObjectId(where._id) };
     }
 
-    const doc = await this._collection.findOne(where);
+    const doc = await this.findOne(where);
 
     if (doc == null) {
       return null;
@@ -101,20 +102,4 @@ export abstract class BaseRepository<T> {
 
     return newItem ?? null;
   }
-}
-function removeUndefinedDeep<T>(obj: T): T {
-  if (obj === null || obj === undefined) {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(removeUndefinedDeep) as T;
-  }
-  if (typeof obj === 'object') {
-    return Object.fromEntries(
-      Object.entries(obj)
-        .filter(([, value]) => value !== undefined)
-        .map(([key, value]) => [key, removeUndefinedDeep(value)]),
-    ) as T;
-  }
-  return obj;
 }

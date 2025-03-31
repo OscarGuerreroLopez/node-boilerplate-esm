@@ -1,3 +1,5 @@
+import { removeKeys } from '@/shared/helpers/remove-keys';
+import { removeUndefinedDeep } from '@/shared/helpers/remove-undefined';
 import { PrismaClient } from '@prisma/client';
 
 export abstract class BaseRepository<T> {
@@ -10,15 +12,13 @@ export abstract class BaseRepository<T> {
   }
 
   protected async findOne(where: Partial<T>): Promise<T | null> {
-    return this._model.findFirst({ where });
+    const result = await this._model.findFirst({ where });
+    return result ?? null;
   }
 
   protected async findById(id: string): Promise<T | null> {
-    return this._model.findUnique({ where: { id } });
-  }
-
-  protected async insert(data: Partial<T>): Promise<T> {
-    return this._model.create({ data });
+    const result = await this._model.findUnique({ where: { id } });
+    return result ?? null;
   }
 
   protected async deleteOne(where: Partial<T>): Promise<boolean> {
@@ -27,14 +27,33 @@ export abstract class BaseRepository<T> {
   }
 
   protected async findAll(page: number, pageSize: number): Promise<T[]> {
-    return this._model.findMany({
+    const result = await this._model.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
+    return result ?? null;
   }
 
-  protected async updateOne(where: Partial<T>, data: Partial<T>): Promise<T | null> {
-    return this._model.update({ where, data });
+  protected async insert(data: Partial<T>): Promise<T> {
+    const result = await this._model.create({ data });
+    return result ?? null;
+  }
+
+  protected async updateOne(where: Partial<T>, data: Partial<T>): Promise<NonNullable<T> | null> {
+    const doc = await this.findOne(where);
+
+    if (doc == null) {
+      return null;
+    }
+
+    const cleanValues = removeUndefinedDeep(data);
+
+    const newItem = removeKeys({ ...doc, ...cleanValues }, ['id', 'entityId', 'createdAt', 'updatedAt']);
+
+    console.log('@@@111', { where, data: { ...newItem } });
+
+    const result = await this._model.update({ where, data: { ...newItem } });
+    return result ?? null;
   }
 
   protected abstract transformNestedRelations(data: Partial<T>): Partial<T>;

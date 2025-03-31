@@ -6,4 +6,4 @@ import { userSqlRepository } from '@/infra/sqlRepositories';
 
 export const addUserUsecase = makeAddUserUsecase(userMongoRepository, userSqlRepository);
 export const getUserUsecase = makeGetUserUsecase(userMongoRepository);
-export const updateUserUsecase = makeUpdateUserUsecase(userMongoRepository);
+export const updateUserUsecase = makeUpdateUserUsecase(userMongoRepository, userSqlRepository);

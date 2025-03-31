@@ -11,7 +11,7 @@ export interface AddUserUsecaseResponse {
 }
 
 export type AddUserUsecase = (addUserParams: { user: AddUserDto; code: string }) => Promise<AddUserUsecaseResponse>;
-export type MakeAddUser = (userRepository: UserMongoRepository, userSqlRepository: UserSqlRepository) => AddUserUsecase;
+export type MakeAddUser = (userMongoRepository: UserMongoRepository, userSqlRepository: UserSqlRepository) => AddUserUsecase;
 
 export type GetUserUsecase = (id: string, code: string) => Promise<AddUserUsecaseResponse>;
 export type MakeGetUser = (userRepository: UserMongoRepository) => GetUserUsecase;
@@ -21,4 +21,4 @@ export type UpdateUserUsecase = (updateUserParams: {
   identifier: Identifier;
   code: string;
 }) => Promise<AddUserUsecaseResponse>;
-export type MakeUpdateUser = (userRepository: UserMongoRepository) => UpdateUserUsecase;
+export type MakeUpdateUser = (userMongoRepository: UserMongoRepository, userSqlRepository: UserSqlRepository) => UpdateUserUsecase;

@@ -17,6 +17,16 @@ export class UserSqlRepository extends BaseRepository<ISqlUserModel> implements 
     return await this.insert(transformedData);
   }
 
+  async updateUserById(id: string, values: Partial<ISqlUserModel>): Promise<ISqlUserModel | null> {
+    const userModel = await this.updateOne({ id }, values);
+    return userModel;
+  }
+
+  async updateUserByEntityId(entityId: string, values: Partial<ISqlUserModel>): Promise<ISqlUserModel | null> {
+    const userModel = await this.updateOne({ entityId }, values);
+    return userModel;
+  }
+
   protected transformNestedRelations(data: Partial<ISqlUserModel>): Partial<ISqlUserModel> {
     if (data.addresses != null && Array.isArray(data.addresses)) {
       return {
