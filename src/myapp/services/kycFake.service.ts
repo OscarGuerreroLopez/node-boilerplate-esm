@@ -1,6 +1,7 @@
 import { type UserEntity } from '@/core/domain/user/entities/user.entity';
 import { Status } from '@/core/types/user';
 import { type UserMongoRepository } from '@/infra/mongoRepositories/user.repository';
+import { type UserSqlRepository } from '@/infra/sqlRepositories/user.repository';
 import { logger } from '@/shared/logger';
 
 const logMeta = {
@@ -16,7 +17,7 @@ const fakeAsyncDelay = async (): Promise<void> => {
 
 type KycFakeService = (params: { user: UserEntity; entityId: string }) => Promise<void>;
 
-export const makeKycServiceFake = (userMongoRepository: UserMongoRepository): KycFakeService => {
+export const makeKycServiceFake = (userMongoRepository: UserMongoRepository, userSqlRepository: UserSqlRepository): KycFakeService => {
   const kycFakeService: KycFakeService = async ({ entityId, user }): Promise<void> => {
     await fakeAsyncDelay();
 
@@ -36,6 +37,10 @@ export const makeKycServiceFake = (userMongoRepository: UserMongoRepository): Ky
     }
 
     await userMongoRepository.updateUserByEntityId(entityId, {
+      kycStatus: user.getKycStatus().value,
+    });
+
+    await userSqlRepository.updateUserByEntityId(entityId, {
       kycStatus: user.getKycStatus().value,
     });
 

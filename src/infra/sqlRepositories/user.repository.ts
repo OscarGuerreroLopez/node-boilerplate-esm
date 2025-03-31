@@ -13,26 +13,38 @@ export class UserSqlRepository extends BaseRepository<ISqlUserModel> implements 
       return address;
     });
 
-    const transformedData = this.transformNestedRelations(user);
+    const transformedData = this.transformNestedRelations(user, 'create');
     return await this.insert(transformedData);
   }
 
   async updateUserById(id: string, values: Partial<ISqlUserModel>): Promise<ISqlUserModel | null> {
-    const userModel = await this.updateOne({ id }, values);
+    const transformedData = this.transformNestedRelations(values, 'update');
+    const userModel = await this.updateOne({ id }, transformedData);
     return userModel;
   }
 
   async updateUserByEntityId(entityId: string, values: Partial<ISqlUserModel>): Promise<ISqlUserModel | null> {
-    const userModel = await this.updateOne({ entityId }, values);
+    const transformedData = this.transformNestedRelations(values, 'update');
+    const userModel = await this.updateOne({ entityId }, transformedData);
     return userModel;
   }
 
-  protected transformNestedRelations(data: Partial<ISqlUserModel>): Partial<ISqlUserModel> {
+  protected transformNestedRelations(data: Partial<ISqlUserModel>, method: 'create' | 'update'): Partial<ISqlUserModel> {
     if (data.addresses != null && Array.isArray(data.addresses)) {
-      return {
-        ...data,
-        addresses: { create: data.addresses } as any, // Explicitly cast to match Prisma format
-      };
+      if (method === 'create') {
+        return {
+          ...data,
+          addresses: { create: data.addresses } as any, // Explicitly cast to match Prisma format
+        };
+      } else if (method === 'update') {
+        return {
+          ...data,
+          addresses: {
+            deleteMany: {},
+            create: data.addresses,
+          } as any,
+        };
+      }
     }
     return data;
   }

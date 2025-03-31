@@ -1,3 +1,4 @@
+import { type IObjectLiteral } from '@/core/types/common';
 import { removeKeys } from '@/shared/helpers/remove-keys';
 import { removeUndefinedDeep } from '@/shared/helpers/remove-undefined';
 import { PrismaClient } from '@prisma/client';
@@ -11,8 +12,8 @@ export abstract class BaseRepository<T> {
     this._model = this._db[modelName];
   }
 
-  protected async findOne(where: Partial<T>): Promise<T | null> {
-    const result = await this._model.findFirst({ where });
+  protected async findOne(where: Partial<T>, include?: IObjectLiteral): Promise<T | null> {
+    const result = await this._model.findFirst({ where, include });
     return result ?? null;
   }
 
@@ -40,7 +41,8 @@ export abstract class BaseRepository<T> {
   }
 
   protected async updateOne(where: Partial<T>, data: Partial<T>): Promise<NonNullable<T> | null> {
-    const doc = await this.findOne(where);
+    const shouldIncludeAddresses = 'addresses' in data;
+    const doc = await this.findOne(where, shouldIncludeAddresses ? { addresses: true } : undefined);
 
     if (doc == null) {
       return null;
@@ -48,11 +50,18 @@ export abstract class BaseRepository<T> {
 
     const cleanValues = removeUndefinedDeep(data);
 
-    const newItem = removeKeys({ ...doc, ...cleanValues }, ['id', 'entityId', 'createdAt', 'updatedAt']);
+    // Handle nested relations properly
+    const newItem: any = removeKeys({ ...cleanValues }, ['id', 'entityId', 'createdAt', 'updatedAt']);
 
-    const result = await this._model.update({ where, data: { ...newItem } });
+    if ('addresses' in data && Array.isArray(data.addresses)) {
+      newItem.addresses = {
+        create: data.addresses.map((addr) => removeUndefinedDeep(addr)),
+      };
+    }
+
+    const result = await this._model.update({ where, data: newItem });
     return result ?? null;
   }
 
-  protected abstract transformNestedRelations(data: Partial<T>): Partial<T>;
+  protected abstract transformNestedRelations(data: Partial<T>, method: string): Partial<T>;
 }

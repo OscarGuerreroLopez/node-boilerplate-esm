@@ -2,6 +2,7 @@
 import { ObjectId, type Collection } from 'mongodb';
 import { Database } from '../mongo';
 import { removeUndefinedDeep } from '@/shared/helpers/remove-undefined';
+import { removeKeys } from '@/shared/helpers/remove-keys';
 
 export abstract class BaseRepository<T> {
   protected _collection!: Collection;
@@ -90,7 +91,7 @@ export abstract class BaseRepository<T> {
 
     const cleanValues = removeUndefinedDeep(values);
 
-    const newItem = { ...doc, ...cleanValues, updatedAt: new Date() } as unknown as T;
+    const newItem = removeKeys({ ...doc, ...cleanValues, updatedAt: new Date() }, ['createdAt']) as unknown as T;
 
     await this._collection.updateOne(
       { ...where },
