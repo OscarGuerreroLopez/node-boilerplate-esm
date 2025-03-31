@@ -39,32 +39,40 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
         ...(addresses != null && addresses.length > 0 && { addresses }),
       };
 
-      const userMongoModel =
+      const updateMongoPromise =
         identifier.type === 'id'
-          ? await userMongoRepository.updateUserById(identifier.value, userToUpdate)
-          : await userMongoRepository.updateUserByEntityId(identifier.value, userToUpdate);
+          ? userMongoRepository.updateUserById(identifier.value, userToUpdate)
+          : userMongoRepository.updateUserByEntityId(identifier.value, userToUpdate);
 
-      if (userMongoModel == null) {
-        throw WarnError.notFound(`unable to update user ${user.email}`);
+      const updateSqlPromise =
+        identifier.type === 'id'
+          ? userSqlRepository.updateUserById(identifier.value, userToUpdate)
+          : userSqlRepository.updateUserByEntityId(identifier.value, userToUpdate);
+
+      const [mongoResult, sqlResult] = await Promise.allSettled([updateMongoPromise, updateSqlPromise]);
+
+      if (mongoResult.status === 'rejected' || mongoResult.value == null) {
+        throw WarnError.notFound(
+          `Unable to update user ${user.email} in MongoDB: ${mongoResult.status === 'rejected' ? mongoResult.reason : 'User not found'}`,
+        );
       }
 
-      const userSqlModel =
-        identifier.type === 'id'
-          ? await userSqlRepository.updateUserById(identifier.value, userToUpdate)
-          : await userSqlRepository.updateUserByEntityId(identifier.value, userToUpdate);
-
-      if (userSqlModel == null) {
-        throw WarnError.notFound(`unable to update user ${user.email}`);
+      if (sqlResult.status === 'rejected' || sqlResult.value == null) {
+        throw WarnError.notFound(
+          `Unable to update user ${user.email} in SQL: ${sqlResult.status === 'rejected' ? sqlResult.reason : 'User not found'}`,
+        );
       }
+
+      const mongoUser = validateUpdate<IMongoUserModel>(mongoResult);
 
       const userAggregate = UserAggregate.fromData({
-        email: userMongoModel.email,
-        name: userMongoModel.name,
-        addresses: userMongoModel.addresses,
-        status: userMongoModel.status,
-        kycStatus: userMongoModel.kycStatus,
-        emailStatus: userMongoModel.emailStatus,
-        entityId: userMongoModel.entityId,
+        email: mongoUser.email,
+        name: mongoUser.name,
+        addresses: mongoUser.addresses,
+        status: mongoUser.status,
+        kycStatus: mongoUser.kycStatus,
+        emailStatus: mongoUser.emailStatus,
+        entityId: mongoUser.entityId,
       });
 
       const userAggregatedEvents = [...userAggregate.getDomainEvents()];
@@ -73,7 +81,7 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
         DomainEventDispatcher.dispatch(event);
       }
 
-      return { user: userAggregate, id: userMongoModel._id };
+      return { user: userAggregate, id: mongoUser._id };
     } catch (error) {
       logger.error(error instanceof Error ? error.message : JSON.stringify(error), {
         file: 'src/myapp/usecases/updateUser.usecase.ts',
@@ -88,4 +96,11 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
   };
 
   return updateUserUsecase;
+};
+
+const validateUpdate = <T>(result: PromiseSettledResult<T | null>): T => {
+  if (result.status === 'rejected' || result.value == null) {
+    throw WarnError.notFound(`Unable to update user: ${result.status === 'rejected' ? result.reason : 'User not found'}`);
+  }
+  return result.value;
 };
