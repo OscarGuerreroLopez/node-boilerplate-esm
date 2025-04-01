@@ -31,8 +31,6 @@ export const userModelFactory = (params: Partial<IMongoUserModel> | Partial<ISql
     status: params.status ?? Status.PENDING,
     kycStatus: params.kycStatus ?? Status.PENDING,
     emailStatus: params.emailStatus ?? Status.PENDING,
-    createdAt: params.createdAt ?? new Date(),
-    updatedAt: params.updatedAt ?? new Date(),
   };
 
   if (isSqlModel(params)) {
