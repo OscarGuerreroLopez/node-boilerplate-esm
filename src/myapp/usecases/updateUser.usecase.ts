@@ -2,9 +2,10 @@ import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.eve
 import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { WarnError } from '@/core/errors';
 import { type MakeUpdateUser, type UpdateUserUsecase } from '@/core/types/user/usecases';
-import { type ISqlAddressModel, type IMongoAddressModel, type IMongoUserModel, type ISqlUserModel } from '@/core/types/models/user.model';
+import { type ISqlAddressModel, type IMongoAddressModel, type IMongoUserModel } from '@/core/types/models/user.model';
 import { Status } from '@/core/types/user';
 import { logger } from '@/shared/logger';
+import { userModelFactory } from '@/core/types/models/user.model.factory';
 
 export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userSqlRepository): UpdateUserUsecase => {
   const updateUserUsecase: UpdateUserUsecase = async ({ user, identifier, code }) => {
@@ -30,14 +31,14 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
           };
         }) ?? [];
 
-      const userToUpdate: Partial<IMongoUserModel> | Partial<ISqlUserModel> = {
+      const userToUpdate = userModelFactory({
         name: user.name,
         email: user.email,
         status: userStatus,
         kycStatus,
         emailStatus,
         ...(addresses != null && addresses.length > 0 && { addresses }),
-      };
+      });
 
       const updateMongoPromise =
         identifier.type === 'id'
@@ -65,14 +66,16 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
 
       const mongoUser = validateUpdate<IMongoUserModel>(mongoResult);
 
+      const { value: dbUser } = mongoResult;
+
       const userAggregate = UserAggregate.fromData({
-        email: mongoUser.email,
-        name: mongoUser.name,
-        addresses: mongoUser.addresses,
-        status: mongoUser.status,
-        kycStatus: mongoUser.kycStatus,
-        emailStatus: mongoUser.emailStatus,
-        entityId: mongoUser.entityId,
+        email: dbUser.email,
+        name: dbUser.name,
+        addresses: dbUser.addresses,
+        status: dbUser.status,
+        entityId: dbUser.entityId,
+        kycStatus: dbUser.kycStatus,
+        emailStatus: dbUser.emailStatus,
       });
 
       const userAggregatedEvents = [...userAggregate.getDomainEvents()];

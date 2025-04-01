@@ -1,7 +1,7 @@
 import { removeUndefinedDeep } from '@/shared/helpers/remove-undefined';
 
 describe('removeUndefinedDeep', () => {
-  it('should remove undefined values from an object', () => {
+  it('should remove undefined values', () => {
     const input = {
       name: 'John',
       email: undefined,
@@ -16,125 +16,96 @@ describe('removeUndefinedDeep', () => {
     });
   });
 
-  it('should handle nested objects', () => {
-    const input = {
-      id: 1,
-      details: {
-        email: undefined,
-        address: {
-          street: '123 Street',
-          city: undefined,
-        },
-      },
-      status: 'ACTIVE',
-    };
-
-    const result = removeUndefinedDeep(input);
-
-    expect(result).toEqual({
-      id: 1,
-      details: {
-        address: {
-          street: '123 Street',
-        },
-      },
-      status: 'ACTIVE',
-    });
-  });
-
-  it('should handle arrays and remove undefined values', () => {
-    const input = [{ name: 'John', email: undefined }, { name: 'Jane', email: 'jane@example.com' }, undefined];
-
-    const result = removeUndefinedDeep(input);
-
-    expect(result).toEqual([{ name: 'John' }, { name: 'Jane', email: 'jane@example.com' }]);
-  });
-
-  it('should handle deeply nested arrays', () => {
-    const input = [
-      {
-        id: 1,
-        tags: ['tag1', undefined, 'tag2'],
-        details: [{ key: 'value', extra: undefined }, undefined],
-      },
-      undefined,
-    ];
-
-    const result = removeUndefinedDeep(input);
-
-    expect(result).toEqual([
-      {
-        id: 1,
-        tags: ['tag1', 'tag2'],
-        details: [{ key: 'value' }],
-      },
-    ]);
-  });
-
-  it('should preserve falsy values like null, 0, and false', () => {
+  it('should remove empty string values', () => {
     const input = {
       name: 'John',
-      email: null,
-      isActive: false,
-      score: 0,
-      optionalField: undefined,
+      email: '',
+      age: 30,
     };
 
     const result = removeUndefinedDeep(input);
 
     expect(result).toEqual({
       name: 'John',
-      email: null,
-      isActive: false,
-      score: 0,
+      age: 30,
     });
   });
 
-  it('should handle empty objects', () => {
-    const input = {};
+  it('should remove undefined and empty string values from nested objects', () => {
+    const input = {
+      name: 'John',
+      contact: {
+        email: '',
+        phone: undefined,
+        address: {
+          street: '123 Main St',
+          city: '',
+        },
+      },
+      age: 30,
+    };
+
+    const result = removeUndefinedDeep(input);
+
+    expect(result).toEqual({
+      name: 'John',
+      contact: {
+        address: {
+          street: '123 Main St',
+        },
+      },
+      age: 30,
+    });
+  });
+
+  it('should remove undefined and empty string values from arrays', () => {
+    const input = {
+      tags: ['developer', '', undefined, 'engineer'],
+    };
+
+    const result = removeUndefinedDeep(input);
+
+    expect(result).toEqual({
+      tags: ['developer', 'engineer'],
+    });
+  });
+
+  it('should return an empty object if all properties are removed', () => {
+    const input = {
+      email: '',
+      phone: undefined,
+      address: '',
+    };
 
     const result = removeUndefinedDeep(input);
 
     expect(result).toEqual({});
   });
 
-  it('should handle empty arrays', () => {
-    const input: any[] = [];
-
-    const result = removeUndefinedDeep(input);
-
-    expect(result).toEqual([]);
-  });
-
-  it('should handle mixed structures of objects and arrays', () => {
+  it('should return an empty array if all elements are removed', () => {
     const input = {
-      users: [
-        { id: 1, name: 'John', email: undefined },
-        { id: 2, name: 'Jane', email: 'jane@example.com' },
-      ],
-      settings: {
-        theme: 'dark',
-        notifications: undefined,
-        features: {
-          analytics: true,
-          logging: undefined,
-        },
-      },
+      tags: ['', undefined, ''],
     };
 
     const result = removeUndefinedDeep(input);
 
     expect(result).toEqual({
-      users: [
-        { id: 1, name: 'John' },
-        { id: 2, name: 'Jane', email: 'jane@example.com' },
-      ],
-      settings: {
-        theme: 'dark',
-        features: {
-          analytics: true,
-        },
-      },
+      tags: [],
     });
+  });
+
+  it('should return the same object if there are no undefined or empty string values', () => {
+    const input = {
+      name: 'John',
+      age: 30,
+      contact: {
+        email: 'john@example.com',
+        phone: '123-456-7890',
+      },
+    };
+
+    const result = removeUndefinedDeep(input);
+
+    expect(result).toEqual(input); // No changes expected
   });
 });

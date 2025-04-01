@@ -5,7 +5,7 @@ import { WarnError } from '@/core/errors';
 import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
 import { AddressEntity } from '@/core/domain/user/entities/address.entity';
-import { type IMongoUserModel, type ISqlUserModel } from '@/core/types/models/user.model';
+import { userModelFactory } from '@/core/types/models/user.model.factory';
 
 export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
@@ -17,7 +17,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
 
       const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
-      const userModel: IMongoUserModel | ISqlUserModel = {
+      const userModel = userModelFactory({
         email: userAggregate.getUser().getEmail().value,
         name: userAggregate.getUser().getName().value,
         entityId: userAggregate.entityId,
@@ -27,7 +27,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
           country: address.getCountry().value,
           entityId: address.entityId,
         })),
-      };
+      });
 
       const [mongoResult, sqlResult] = await Promise.allSettled([
         userMongoRepository.addUser(userModel),
