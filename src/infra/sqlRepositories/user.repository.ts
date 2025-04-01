@@ -30,7 +30,7 @@ export class UserSqlRepository extends BaseRepository<ISqlUserModel> implements 
   }
 
   protected transformNestedRelations(data: Partial<ISqlUserModel>, method: 'create' | 'update'): Partial<ISqlUserModel> {
-    if (data.addresses != null && Array.isArray(data.addresses)) {
+    if (data.addresses != null && Array.isArray(data.addresses) && data.addresses.length > 0) {
       if (method === 'create') {
         return {
           ...data,

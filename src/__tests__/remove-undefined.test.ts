@@ -37,10 +37,12 @@ describe('removeUndefinedDeep', () => {
       contact: {
         email: '',
         phone: undefined,
-        address: {
-          street: '123 Main St',
-          city: '',
-        },
+        address: [
+          {
+            street: '123 Main St',
+            city: '',
+          },
+        ],
       },
       age: 30,
     };
@@ -50,9 +52,11 @@ describe('removeUndefinedDeep', () => {
     expect(result).toEqual({
       name: 'John',
       contact: {
-        address: {
-          street: '123 Main St',
-        },
+        address: [
+          {
+            street: '123 Main St',
+          },
+        ],
       },
       age: 30,
     });
@@ -75,6 +79,18 @@ describe('removeUndefinedDeep', () => {
       email: '',
       phone: undefined,
       address: '',
+    };
+
+    const result = removeUndefinedDeep(input);
+
+    expect(result).toEqual({});
+  });
+
+  it('should return an empty object if all properties are removed with empty array too', () => {
+    const input = {
+      email: '',
+      phone: undefined,
+      address: [],
     };
 
     const result = removeUndefinedDeep(input);

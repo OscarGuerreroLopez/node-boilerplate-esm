@@ -83,24 +83,16 @@ export abstract class BaseRepository<T> {
       where = { ...where, _id: new ObjectId(where._id) };
     }
 
-    const doc = await this.findOne(where);
-
-    if (doc == null) {
-      return null;
-    }
-
     const cleanValues = removeUndefinedDeep(values);
 
-    const newItem = removeKeys({ ...doc, ...cleanValues, updatedAt: new Date() }, ['createdAt']) as unknown as T;
+    const newItem = removeKeys({ ...cleanValues, updatedAt: new Date() }, ['createdAt']);
 
-    await this._collection.updateOne(
-      { ...where },
+    const result = (await this._collection.findOneAndUpdate(
+      where,
       { $set: newItem as Partial<T> },
-      {
-        upsert: false,
-      },
-    );
+      { returnDocument: 'after' },
+    )) as unknown as T;
 
-    return newItem ?? null;
+    return result ?? null;
   }
 }

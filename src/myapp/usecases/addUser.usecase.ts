@@ -34,6 +34,36 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
         userSqlRepository.addUser(userModel),
       ]);
 
+      if (mongoResult.status === 'rejected' || sqlResult.status === 'rejected') {
+        // Extract MongoDB reason
+        const mongoReason =
+          mongoResult.status === 'rejected'
+            ? typeof mongoResult.reason === 'object' && mongoResult.reason !== null
+              ? mongoResult.reason.message
+              : String(mongoResult.reason)
+            : '';
+
+        // Extract SQL reason
+        const sqlReason =
+          sqlResult.status === 'rejected'
+            ? typeof sqlResult.reason === 'object' && sqlResult.reason !== null
+              ? JSON.stringify(sqlResult.reason.message)
+              : String(sqlResult.reason.message)
+            : '';
+
+        // Construct the consolidated error message
+        const errorMessage = `
+          Cannot add user:
+          - MongoDB Error: ${mongoReason !== '' ? mongoReason : 'No MongoDB error'}
+          - SQL Error: ${sqlReason !== '' ? sqlReason : 'No SQL error'}
+        `.trim();
+
+        throw new WarnError({
+          message: errorMessage,
+          statusCode: 400,
+        });
+      }
+
       // Handle results
       const userMongoModel = mongoResult.status === 'fulfilled' ? mongoResult.value : null;
       const userSqlModel = sqlResult.status === 'fulfilled' ? sqlResult.value : null;

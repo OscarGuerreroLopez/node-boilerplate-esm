@@ -41,23 +41,9 @@ export abstract class BaseRepository<T> {
   }
 
   protected async updateOne(where: Partial<T>, data: Partial<T>): Promise<NonNullable<T> | null> {
-    const shouldIncludeAddresses = 'addresses' in data;
-    const doc = await this.findOne(where, shouldIncludeAddresses ? { addresses: true } : undefined);
-
-    if (doc == null) {
-      return null;
-    }
-
     const cleanValues = removeUndefinedDeep(data);
 
-    // Handle nested relations properly
-    const newItem: any = removeKeys({ ...cleanValues }, ['id', 'entityId', 'createdAt', 'updatedAt']);
-
-    if ('addresses' in data && Array.isArray(data.addresses)) {
-      newItem.addresses = {
-        create: data.addresses.map((addr) => removeUndefinedDeep(addr)),
-      };
-    }
+    const newItem = removeKeys({ ...cleanValues }, ['id', 'entityId', 'createdAt', 'updatedAt']);
 
     const result = await this._model.update({ where, data: newItem });
     return result ?? null;
