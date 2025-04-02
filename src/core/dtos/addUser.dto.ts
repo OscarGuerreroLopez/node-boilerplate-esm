@@ -40,6 +40,10 @@ export class AddUserDto implements CoreDto<IUserModel> {
       errors.push({ fields: ['addresses'], constraint: 'Missing address data' });
     }
 
+    if (this.addresses.length > 3) {
+      errors.push({ fields: ['addresses'], constraint: 'Max 3 addresses' });
+    }
+
     if (errors.length > ZERO) {
       throw WarnError.badRequest('Error validating user data', errors);
     }

@@ -51,6 +51,10 @@ export class UpdateUserDto implements CoreDto<Partial<IUserModel>> {
       errors.push({ fields: ['identifier'], constraint: 'Identifier type must be either "id" or "entityId"' });
     }
 
+    if (this.addresses != null && this.addresses.length > 3) {
+      errors.push({ fields: ['addresses'], constraint: 'Max 3 addresses' });
+    }
+
     if (errors.length > ZERO) {
       throw WarnError.badRequest('Error validating update user data', errors);
     }
