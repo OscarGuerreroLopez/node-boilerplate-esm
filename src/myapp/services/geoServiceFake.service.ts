@@ -1,8 +1,10 @@
 import { type AddressEntity } from '@/core/domain/user/entities/address.entity';
 import { type UserEntity } from '@/core/domain/user/entities/user.entity';
-import { type IAddressModel } from '@/core/types/models/user.model';
+import { forbiddenCountries } from '@/core/types/constants';
+import { type IMongoAddressModel } from '@/core/types/models/user.model';
 import { Status } from '@/core/types/user';
-import { type UserRepository } from '@/infra/repositories/user.repository';
+import { type UserMongoRepository } from '@/infra/mongoRepositories/user.repository';
+import { type UserSqlRepository } from '@/infra/sqlRepositories/user.repository';
 import { logger } from '@/shared/logger';
 
 // fake service emulating an external service that gets the event
@@ -20,15 +22,13 @@ const fakeAsyncDelay = async (): Promise<void> => {
   console.log('@@@ fake await');
 };
 
-const forbiddenCountries = ['somalia', 'burundi'];
-
-export const makeGeoServiceFake = (userRepository: UserRepository): GeoFakeService => {
-  const geoFakeService: GeoFakeService = async ({ entityId, user, addresses }): Promise<void> => {
+export const makeGeoServiceFake = (userMongoRepository: UserMongoRepository, userSqlRepository: UserSqlRepository): GeoFakeService => {
+  const geoFakeService: GeoFakeService = async ({ entityId, addresses }): Promise<void> => {
     try {
       await fakeAsyncDelay();
 
       let update = false;
-      const newAddresses: IAddressModel[] = [];
+      const newAddresses: IMongoAddressModel[] = [];
 
       for (const address of addresses) {
         const status = address.getStatus().value;
@@ -53,7 +53,11 @@ export const makeGeoServiceFake = (userRepository: UserRepository): GeoFakeServi
       }
 
       if (update) {
-        await userRepository.updateUserByEntityId(entityId, {
+        await userMongoRepository.updateUserByEntityId(entityId, {
+          addresses: newAddresses,
+        });
+
+        await userSqlRepository.updateUserByEntityId(entityId, {
           addresses: newAddresses,
         });
 

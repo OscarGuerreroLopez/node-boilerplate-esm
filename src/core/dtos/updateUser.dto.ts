@@ -1,25 +1,26 @@
-import { type Status, type Address, type User } from '../types/user';
+import { type Status } from '../types/user';
 import { ZERO } from '../types/constants';
 import { WarnError } from '../errors';
 import { type Identifier } from '../types/common';
 import { type CoreDto } from './core.dto';
 import { type ValidationType } from '../types/http';
+import { type IAddressModel, type IUserModel } from '../types/models/user.model';
 
 export interface UpdateUserDtoProps {
   identifier: Identifier;
   name?: string;
   email?: string;
-  addresses?: Address[];
+  addresses?: IAddressModel[];
   status?: Status;
   kycStatus?: Status;
   emailStatus?: Status;
 }
 
-export class UpdateUserDto implements CoreDto<Partial<User>> {
+export class UpdateUserDto implements CoreDto<Partial<IUserModel>> {
   public readonly identifier: Identifier;
   public readonly name?: string;
   public readonly email?: string;
-  public readonly addresses?: Array<Partial<Address>>;
+  public readonly addresses?: Array<Partial<IAddressModel>>;
   public readonly status?: Status;
   public readonly kycStatus?: Status;
   public readonly emailStatus?: Status;
@@ -48,6 +49,10 @@ export class UpdateUserDto implements CoreDto<Partial<User>> {
       errors.push({ fields: ['identifier'], constraint: 'Identifier must be properly formatted' });
     } else if (this.identifier?.type !== 'id' && this.identifier?.type !== 'entityId') {
       errors.push({ fields: ['identifier'], constraint: 'Identifier type must be either "id" or "entityId"' });
+    }
+
+    if (this.addresses != null && this.addresses.length > 3) {
+      errors.push({ fields: ['addresses'], constraint: 'Max 3 addresses' });
     }
 
     if (errors.length > ZERO) {

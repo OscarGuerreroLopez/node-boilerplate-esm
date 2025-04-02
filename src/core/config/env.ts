@@ -12,4 +12,6 @@ export const envs = {
   MONGO_URL: get('MONGO_URL').required().asString(),
   MONGO_DATABASE: get('MONGO_DATABASE').required().asString(),
   SERVICE_NAME: get('SERVICE_NAME').required().asString(),
+  DATABASE_URL: get('DATABASE_URL').required().asString(),
+  DATABASE_URL_TEST: get('DATABASE_URL_TEST').required().asString(),
 };

@@ -75,10 +75,10 @@ export class MyAppController {
   };
 
   public getUser = (req: CustomRequest, res: Response<SuccessResponse<UserResponseDto & { code: string }>>, next: NextFunction): void => {
-    const { id } = req.params;
+    const { entityId } = req.params;
     const { code } = req;
 
-    if (id == null) {
+    if (entityId == null) {
       next(new Error('ID is required'));
       return;
     }
@@ -88,7 +88,7 @@ export class MyAppController {
       return;
     }
 
-    getUserUsecase(id, code)
+    getUserUsecase(entityId, code)
       .then((result) => {
         res.json({
           serviceName: envs.SERVICE_NAME,

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { ObjectId, type Collection } from 'mongodb';
 import { Database } from '../mongo';
+import { removeUndefinedDeep } from '@/shared/helpers/remove-undefined';
+import { removeKeys } from '@/shared/helpers/remove-keys';
 
 export abstract class BaseRepository<T> {
   protected _collection!: Collection;
@@ -20,12 +22,12 @@ export abstract class BaseRepository<T> {
     }
   }
 
-  protected async findOne(where: Partial<T>): Promise<T> {
+  protected async findOne(where: Partial<T>): Promise<NonNullable<T> | null> {
     await this.initializeCollection();
 
     const result = (await this._collection.findOne(where)) as T;
 
-    return result;
+    return result ?? null;
   }
 
   protected async findById(id: string): Promise<NonNullable<T> | null> {
@@ -81,40 +83,16 @@ export abstract class BaseRepository<T> {
       where = { ...where, _id: new ObjectId(where._id) };
     }
 
-    const doc = await this._collection.findOne(where);
-
-    if (doc == null) {
-      return null;
-    }
-
     const cleanValues = removeUndefinedDeep(values);
 
-    const newItem = { ...doc, ...cleanValues, updatedAt: new Date() } as unknown as T;
+    const newItem = removeKeys({ ...cleanValues, updatedAt: new Date() }, ['createdAt']);
 
-    await this._collection.updateOne(
-      { ...where },
+    const result = (await this._collection.findOneAndUpdate(
+      where,
       { $set: newItem as Partial<T> },
-      {
-        upsert: false,
-      },
-    );
+      { returnDocument: 'after' },
+    )) as unknown as T;
 
-    return newItem ?? null;
+    return result ?? null;
   }
-}
-function removeUndefinedDeep<T>(obj: T): T {
-  if (obj === null || obj === undefined) {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(removeUndefinedDeep) as T;
-  }
-  if (typeof obj === 'object') {
-    return Object.fromEntries(
-      Object.entries(obj)
-        .filter(([, value]) => value !== undefined)
-        .map(([key, value]) => [key, removeUndefinedDeep(value)]),
-    ) as T;
-  }
-  return obj;
 }
