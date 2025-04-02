@@ -14,11 +14,12 @@ const isMongoModel = (params: Partial<IMongoUserModel> | Partial<ISqlUserModel>)
 const addressModelFactory = (
   addresses: Array<Partial<IMongoAddressModel>> | Array<Partial<ISqlAddressModel>> = [],
 ): IMongoAddressModel[] | ISqlAddressModel[] => {
-  return addresses.map(({ street, city, country, status }) => ({
+  return addresses.map(({ street, city, country, status, entityId }) => ({
     street: street ?? '',
     city: city ?? '',
     country: country ?? '',
     status: status ?? Status.PENDING,
+    entityId: entityId ?? '',
   }));
 };
 
@@ -26,7 +27,7 @@ export const userModelFactory = (params: Partial<IMongoUserModel> | Partial<ISql
   const baseUser = {
     email: params.email ?? '',
     name: params.name ?? '',
-    entityId: params.entityId ?? undefined,
+    entityId: params.entityId ?? '',
     addresses: addressModelFactory(params.addresses),
     status: params.status ?? Status.PENDING,
     kycStatus: params.kycStatus ?? Status.PENDING,
@@ -47,6 +48,5 @@ export const userModelFactory = (params: Partial<IMongoUserModel> | Partial<ISql
     } satisfies IMongoUserModel;
   }
 
-  // If neither _id nor id exists, explicitly return a partial MongoDB model
   return baseUser satisfies IMongoUserModel;
 };

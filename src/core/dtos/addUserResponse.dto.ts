@@ -1,14 +1,16 @@
-import { type Status, type Address, type User } from '@/core/types/user';
+import { type Status } from '@/core/types/user';
 import { type AddUserUsecaseResponse } from '../types/user/usecases';
+import { type IAddressModel, type IUserModel } from '../types/models/user.model';
 
-export class UserResponseDto implements User {
+export class UserResponseDto implements IUserModel {
   id?: string;
   name: string;
   email: string;
   status: Status;
-  addresses: Address[];
+  addresses: IAddressModel[];
   kycStatus: Status;
   emailStatus: Status;
+  entityId: string;
 
   constructor({ user, id }: AddUserUsecaseResponse) {
     this.name = user.getUser().getName().value;
@@ -18,14 +20,16 @@ export class UserResponseDto implements User {
       city: address.getCity().value,
       country: address.getCountry().value,
       status: address.getStatus().value,
+      entityId: address.entityId,
     }));
     this.status = user.getUser().getStatus().value;
     this.id = id;
     this.kycStatus = user.getUser().getKycStatus().value;
     this.emailStatus = user.getUser().getEmailStatus().value;
+    this.entityId = user.entityId;
   }
 
-  public static create(userAggregate: AddUserUsecaseResponse): User {
+  public static create(userAggregate: AddUserUsecaseResponse): IUserModel {
     return new UserResponseDto(userAggregate);
   }
 }

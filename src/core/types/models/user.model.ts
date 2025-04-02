@@ -8,22 +8,22 @@ export interface BaseModel {
 export type MongoModel = BaseModel & { _id?: string };
 export type SqlModel = BaseModel & { id?: string };
 
-interface IAddressModel {
+export interface IAddressModel {
   street: string;
   city: string;
   country: string;
-  status?: Status;
-  entityId?: string;
+  status: Status;
+  entityId: string;
 }
 
-interface IUserModel {
+export interface IUserModel {
   name: string;
   email: string;
-  status?: Status;
+  status: Status;
   addresses: IAddressModel[];
-  kycStatus?: Status;
-  emailStatus?: Status;
-  entityId?: string;
+  kycStatus: Status;
+  emailStatus: Status;
+  entityId: string;
 }
 
 export type IMongoUserModel = IUserModel & MongoModel & { _id?: string };

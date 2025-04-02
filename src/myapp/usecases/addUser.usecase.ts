@@ -26,6 +26,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
           city: address.getCity().value,
           country: address.getCountry().value,
           entityId: address.entityId,
+          status: address.getStatus().value,
         })),
       });
 

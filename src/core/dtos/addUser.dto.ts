@@ -1,19 +1,20 @@
-import { type Address, type User } from '../types/user';
 import { ZERO } from '../types/constants';
 import { WarnError } from '../errors';
 import { type CoreDto } from './core.dto';
 import { type ValidationType } from '../types/http';
+import { type IAddressModel, type IUserModel } from '../types/models/user.model';
+import { Status } from '../types/user';
 
 export interface AddUserDtoProps {
   name: string;
   email: string;
-  addresses: Array<{ street: string; city: string; country: string }>;
+  addresses: Array<{ street: string; city: string; country: string; status: Status; entityId: string }>;
 }
 
-export class AddUserDto implements CoreDto<User> {
+export class AddUserDto implements CoreDto<IUserModel> {
   public readonly name: string;
   public readonly email: string;
-  public readonly addresses: Address[] = [];
+  public readonly addresses: IAddressModel[] = [];
 
   constructor({ name, email, addresses }: AddUserDtoProps) {
     this.name = name;
@@ -22,6 +23,8 @@ export class AddUserDto implements CoreDto<User> {
       street: address.street ?? '',
       city: address.city ?? '',
       country: address.country ?? '',
+      status: address.status ?? Status.PENDING,
+      entityId: address.entityId ?? '',
     }));
     this.validate();
   }

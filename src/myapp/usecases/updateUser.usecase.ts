@@ -19,7 +19,7 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
       if (user.email != null) userStatus = emailStatus = Status.PENDING;
 
       const addresses: IMongoAddressModel[] | ISqlAddressModel[] =
-        user.addresses?.map(({ street, city, country }) => {
+        user.addresses?.map(({ street, city, country, entityId }) => {
           if (street === undefined || city === undefined || country === undefined) {
             throw new Error('Street, city, and country must be defined in address');
           }
@@ -28,6 +28,7 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
             city,
             country,
             status: Status.PENDING,
+            entityId: entityId ?? '',
           };
         }) ?? [];
 
