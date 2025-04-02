@@ -5,9 +5,9 @@ import { type GetUserUsecase, type MakeGetUser } from '@/core/types/user/usecase
 import { logger } from '@/shared/logger';
 
 export const makeGetUserUsecase: MakeGetUser = (userMongoRepository) => {
-  const getUserUsecase: GetUserUsecase = async (id, code) => {
+  const getUserUsecase: GetUserUsecase = async (entityId, code) => {
     try {
-      const userModel = await userMongoRepository.getUserById(id);
+      const userModel = await userMongoRepository.getUserByEntityId(entityId);
 
       if (userModel?.email == null || userModel?.name == null) {
         throw new WarnError({

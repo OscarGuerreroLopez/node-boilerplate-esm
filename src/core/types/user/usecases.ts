@@ -13,7 +13,7 @@ export interface AddUserUsecaseResponse {
 export type AddUserUsecase = (addUserParams: { user: AddUserDto; code: string }) => Promise<AddUserUsecaseResponse>;
 export type MakeAddUser = (userMongoRepository: UserMongoRepository, userSqlRepository: UserSqlRepository) => AddUserUsecase;
 
-export type GetUserUsecase = (id: string, code: string) => Promise<AddUserUsecaseResponse>;
+export type GetUserUsecase = (entity: string, code: string) => Promise<AddUserUsecaseResponse>;
 export type MakeGetUser = (userRepository: UserMongoRepository) => GetUserUsecase;
 
 export type UpdateUserUsecase = (updateUserParams: {
