@@ -93,4 +93,22 @@ export class AddressEntity extends Entity<AddressProps> {
     this.props.status = statusVo;
     return this;
   }
+
+  public toValue(): Readonly<{
+    street: string;
+    city: string;
+    country: string;
+    status: Status;
+    entityId: string;
+  }> {
+    const snapshot = {
+      street: this.props.street.value,
+      city: this.props.city.value,
+      country: this.props.country.value,
+      status: this.props.status.value,
+      entityId: this.entityId,
+    };
+
+    return Object.freeze(snapshot);
+  }
 }

@@ -1,5 +1,6 @@
 import { Status } from '@/core/types/user';
 import { type IMongoUserModel, type ISqlUserModel, type IMongoAddressModel, type ISqlAddressModel } from '@/core/types/models/user.model';
+import { makeUUID } from '@/shared/helpers/uuidMaker';
 
 // Type Guards
 const isSqlModel = (params: Partial<IMongoUserModel> | Partial<ISqlUserModel>): params is Partial<ISqlUserModel> => {
@@ -19,7 +20,7 @@ const addressModelFactory = (
     city: city ?? '',
     country: country ?? '',
     status: status ?? Status.PENDING,
-    entityId: entityId ?? '',
+    entityId: entityId ?? makeUUID(),
   }));
 };
 
@@ -27,7 +28,7 @@ export const userModelFactory = (params: Partial<IMongoUserModel> | Partial<ISql
   const baseUser = {
     email: params.email ?? '',
     name: params.name ?? '',
-    entityId: params.entityId ?? '',
+    entityId: params.entityId ?? makeUUID(),
     addresses: addressModelFactory(params.addresses),
     status: params.status ?? Status.PENDING,
     kycStatus: params.kycStatus ?? Status.PENDING,

@@ -17,17 +17,13 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
 
       const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
+      const { email, name, entityId, addresses } = userAggregate.toValue();
+
       const userModel = userModelFactory({
-        email: userAggregate.getUser().getEmail().value,
-        name: userAggregate.getUser().getName().value,
-        entityId: userAggregate.entityId,
-        addresses: userAggregate.getAddresses().map((address) => ({
-          street: address.getStreet().value,
-          city: address.getCity().value,
-          country: address.getCountry().value,
-          entityId: address.entityId,
-          status: address.getStatus().value,
-        })),
+        email,
+        name,
+        entityId,
+        addresses,
       });
 
       const [mongoResult, sqlResult] = await Promise.allSettled([

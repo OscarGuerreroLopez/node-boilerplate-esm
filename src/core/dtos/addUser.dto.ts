@@ -5,18 +5,18 @@ import { type ValidationType } from '../types/http';
 import { type IAddressModel, type IUserModel } from '../types/models/user.model';
 import { Status } from '../types/user';
 
-export interface AddUserDtoProps {
-  name: string;
-  email: string;
-  addresses: Array<{ street: string; city: string; country: string; status: Status; entityId: string }>;
-}
-
 export class AddUserDto implements CoreDto<IUserModel> {
   public readonly name: string;
   public readonly email: string;
   public readonly addresses: IAddressModel[] = [];
 
-  constructor({ name, email, addresses }: AddUserDtoProps) {
+  constructor({
+    name,
+    email,
+    addresses,
+  }: Pick<IUserModel, 'name' | 'email'> & {
+    addresses: Array<{ street: string; city: string; country: string; status: Status; entityId: string }>;
+  }) {
     this.name = name;
     this.email = email;
     this.addresses = addresses.map((address) => ({

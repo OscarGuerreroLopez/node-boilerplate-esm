@@ -135,4 +135,24 @@ export class UserEntity extends Entity<UserProps> {
     this.props.emailStatus = statusVo;
     return this;
   }
+
+  public toValue(): Readonly<{
+    email: string;
+    name: string;
+    status: Status;
+    kycStatus: Status;
+    emailStatus: Status;
+    entityId: string;
+  }> {
+    const snapshot = {
+      email: this.props.email.value,
+      name: this.props.name.value,
+      status: this.props.status.value,
+      kycStatus: this.props.kycStatus.value,
+      emailStatus: this.props.emailStatus.value,
+      entityId: this.entityId,
+    };
+
+    return Object.freeze(snapshot);
+  }
 }

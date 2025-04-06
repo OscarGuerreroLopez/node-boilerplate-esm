@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { logger } from '@/shared/logger';
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { UserAggregateRegisteredEvent } from '@/core/domain/user/events/user-aggregate-register.event';
@@ -9,18 +10,22 @@ const logMeta = {
   code: '',
 };
 
-DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {
-  const userEmail = event.user.getEmail().value;
+DomainEventDispatcher.register(UserAggregateRegisteredEvent, async (event) => {
+  try {
+    const userEmail = event.user.getEmail().value;
 
-  logger.info(`[ USER HANDLER ] new registered user event ${userEmail} `, logMeta);
+    logger.info(`[ USER HANDLER ] new registered user event ${userEmail} `, logMeta);
 
-  const entityId = event.id;
+    const entityId = event.id;
 
-  void kycFakeService({ user: event.user, entityId });
+    await kycFakeService({ user: event.user, entityId });
 
-  void geoFakeService({ user: event.user, addresses: event.addresses, entityId });
+    await geoFakeService({ user: event.user, addresses: event.addresses, entityId });
 
-  void mailFakeService({ user: event.user, entityId });
+    await mailFakeService({ user: event.user, entityId });
+  } catch (error) {
+    logger.error(error instanceof Error ? error.message : JSON.stringify(error), logMeta);
+  }
 });
 
 // DomainEventDispatcher.register(UserAggregateRegisteredEvent, (event) => {

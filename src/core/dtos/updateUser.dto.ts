@@ -6,16 +6,6 @@ import { type CoreDto } from './core.dto';
 import { type ValidationType } from '../types/http';
 import { type IAddressModel, type IUserModel } from '../types/models/user.model';
 
-export interface UpdateUserDtoProps {
-  identifier: Identifier;
-  name?: string;
-  email?: string;
-  addresses?: IAddressModel[];
-  status?: Status;
-  kycStatus?: Status;
-  emailStatus?: Status;
-}
-
 export class UpdateUserDto implements CoreDto<Partial<IUserModel>> {
   public readonly identifier: Identifier;
   public readonly name?: string;
@@ -25,7 +15,7 @@ export class UpdateUserDto implements CoreDto<Partial<IUserModel>> {
   public readonly kycStatus?: Status;
   public readonly emailStatus?: Status;
 
-  constructor({ identifier, name, email, addresses, status, kycStatus, emailStatus }: UpdateUserDtoProps) {
+  constructor({ identifier, name, email, addresses, status, kycStatus, emailStatus }: Partial<IUserModel> & { identifier: Identifier }) {
     this.identifier = identifier;
     this.name = name;
     this.email = email;

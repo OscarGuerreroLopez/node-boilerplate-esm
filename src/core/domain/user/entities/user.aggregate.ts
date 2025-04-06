@@ -43,6 +43,16 @@ export class UserAggregate extends Entity<UserAggregateProps> {
     return [...this.props.addresses];
   }
 
+  public toValue(): IMongoUserModel {
+    const user = {
+      ...this.getUser().toValue(),
+      addresses: this.getAddresses().map((address) => address.toValue()),
+      entityId: this.entityId,
+    };
+
+    return Object.freeze(user);
+  }
+
   public addAddress(address: AddressEntity): void {
     this.props.addresses.push(address);
   }

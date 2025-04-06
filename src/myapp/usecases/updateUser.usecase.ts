@@ -38,6 +38,7 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
         status: userStatus,
         kycStatus,
         emailStatus,
+        entityId: identifier.type === 'entityId' ? identifier.value : undefined,
         ...(addresses != null && addresses.length > 0 && { addresses }),
       });
 
