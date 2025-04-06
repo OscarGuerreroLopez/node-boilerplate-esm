@@ -13,20 +13,15 @@ export class UserResponseDto implements IUserModel {
   entityId: string;
 
   constructor({ user, id }: AddUserUsecaseResponse) {
-    this.name = user.getUser().getName().value;
-    this.email = user.getUser().getEmail().value;
-    this.addresses = user.getAddresses().map((address) => ({
-      street: address.getStreet().value,
-      city: address.getCity().value,
-      country: address.getCountry().value,
-      status: address.getStatus().value,
-      entityId: address.entityId,
-    }));
-    this.status = user.getUser().getStatus().value;
+    const { name, email, addresses, status, kycStatus, emailStatus, entityId } = user.toValue();
+    this.name = name;
+    this.email = email;
+    this.addresses = addresses;
+    this.status = status;
     this.id = id;
-    this.kycStatus = user.getUser().getKycStatus().value;
-    this.emailStatus = user.getUser().getEmailStatus().value;
-    this.entityId = user.entityId;
+    this.kycStatus = kycStatus;
+    this.emailStatus = emailStatus;
+    this.entityId = entityId;
   }
 
   public static create(userAggregate: AddUserUsecaseResponse): IUserModel {

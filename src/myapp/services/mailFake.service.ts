@@ -19,33 +19,35 @@ type MailFakeService = (params: { user: UserEntity; entityId: string }) => Promi
 
 export const makeMailFakeService = (userMongoRepository: UserMongoRepository, userSqlRepository: UserSqlRepository): MailFakeService => {
   const mailFakeService: MailFakeService = async ({ entityId, user }): Promise<void> => {
-    await fakeAsyncDelay();
+    try {
+      await fakeAsyncDelay();
 
-    const email = user.getEmail().value;
-    const userName = user.getName().value;
-    const emailStatus = user.getEmailStatus().value;
+      const { emailStatus, email, name: userName } = user.toValue();
 
-    if (emailStatus === Status.VERIFIED || emailStatus === Status.BLOCKED) {
-      return;
+      if (emailStatus === Status.VERIFIED || emailStatus === Status.BLOCKED) {
+        return;
+      }
+
+      if (email === 'hola@hola.com') {
+        user.changeEmailStatus(Status.BLOCKED);
+        logger.warn(`[ MAIL SERVICE ${entityId}] email ${email} is high risk, check it please`, logMeta);
+      } else {
+        user.changeEmailStatus(Status.VERIFIED);
+        logger.info(`[ MAIL SERVICE ${entityId} ] Result for email ${email} all good`, logMeta);
+      }
+
+      await userMongoRepository.updateUserByEntityId(entityId, {
+        emailStatus: user.getEmailStatus().value,
+      });
+
+      await userSqlRepository.updateUserByEntityId(entityId, {
+        emailStatus: user.getEmailStatus().value,
+      });
+
+      logger.info(`[ MAIL SERVICE ${entityId} ] succesfully updated emailStatus for ${userName}. `, logMeta);
+    } catch (error) {
+      logger.error(error instanceof Error ? error.message : JSON.stringify(error), logMeta);
     }
-
-    if (email === 'hola@hola.com') {
-      user.changeEmailStatus(Status.BLOCKED);
-      logger.warn(`[ MAIL SERVICE ${entityId}] email ${email} is high risk, check it please`, logMeta);
-    } else {
-      user.changeEmailStatus(Status.VERIFIED);
-      logger.info(`[ MAIL SERVICE ${entityId} ] Result for email ${email} all good`, logMeta);
-    }
-
-    await userMongoRepository.updateUserByEntityId(entityId, {
-      emailStatus: user.getEmailStatus().value,
-    });
-
-    await userSqlRepository.updateUserByEntityId(entityId, {
-      emailStatus: user.getEmailStatus().value,
-    });
-
-    logger.info(`[ MAIL SERVICE ${entityId} ] succesfully updated emailStatus for ${userName}. `, logMeta);
   };
 
   return mailFakeService;
