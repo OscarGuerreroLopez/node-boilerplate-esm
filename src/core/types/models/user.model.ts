@@ -26,6 +26,7 @@ export interface IUserModel {
   entityId: string;
 }
 
+// TBD: remove & { _id?: string } and & { id?: string } from the models???
 export type IMongoUserModel = IUserModel & MongoModel & { _id?: string };
 export type ISqlUserModel = IUserModel & SqlModel & { id?: string };
 export type IMongoAddressModel = IAddressModel & MongoModel & { _id?: string };

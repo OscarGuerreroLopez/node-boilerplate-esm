@@ -16,11 +16,14 @@ export class AddressEntity extends Entity<AddressProps> {
     super(props, entityId);
   }
 
-  public static create({ street, city, country }: { street: string; city: string; country: string }, entityId?: string): AddressEntity {
+  public static create(
+    { street, city, country, status }: { street: string; city: string; country: string; status?: Status },
+    entityId?: string,
+  ): AddressEntity {
     const streetVo = AddressVo.create(street);
     const cityVo = AddressVo.create(city);
     const countryVo = AddressVo.create(country);
-    const statusVo = UserStatusVo.create();
+    const statusVo = UserStatusVo.create(status);
 
     const address = new AddressEntity({ street: streetVo, city: cityVo, country: countryVo, status: statusVo }, entityId);
 

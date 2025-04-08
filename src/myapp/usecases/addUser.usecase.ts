@@ -10,21 +10,18 @@ import { userModelFactory } from '@/core/types/models/user.model.factory';
 export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
     try {
-      const userEntity = UserEntity.create(user);
+      const userEntity = UserEntity.create({
+        name: user.name,
+        email: user.email,
+      });
       const addressEntities = user.addresses.map((address) =>
         AddressEntity.create({ street: address.street, city: address.city, country: address.country }),
       );
 
       const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
-      const { email, name, entityId, addresses } = userAggregate.toValue();
-
-      const userModel = userModelFactory({
-        email,
-        name,
-        entityId,
-        addresses,
-      });
+      // TBD: replace userModelFactory???
+      const userModel = userModelFactory(userAggregate.toValue());
 
       const [mongoResult, sqlResult] = await Promise.allSettled([
         userMongoRepository.addUser(userModel),
@@ -32,23 +29,9 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
       ]);
 
       if (mongoResult.status === 'rejected' || sqlResult.status === 'rejected') {
-        // Extract MongoDB reason
-        const mongoReason =
-          mongoResult.status === 'rejected'
-            ? typeof mongoResult.reason === 'object' && mongoResult.reason !== null
-              ? mongoResult.reason.message
-              : String(mongoResult.reason)
-            : '';
+        const mongoReason = getReason(mongoResult);
+        const sqlReason = getReason(sqlResult);
 
-        // Extract SQL reason
-        const sqlReason =
-          sqlResult.status === 'rejected'
-            ? typeof sqlResult.reason === 'object' && sqlResult.reason !== null
-              ? JSON.stringify(sqlResult.reason.message)
-              : String(sqlResult.reason.message)
-            : '';
-
-        // Construct the consolidated error message
         const errorMessage = `
           Cannot add user:
           - MongoDB Error: ${mongoReason !== '' ? mongoReason : 'No MongoDB error'}
@@ -125,4 +108,15 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
   };
 
   return addUserUsecase;
+};
+
+const getReason = (result: PromiseSettledResult<any>): string => {
+  if (result.status === 'rejected') {
+    return typeof result.reason === 'object' && result.reason !== null
+      ? typeof result.reason.message === 'string'
+        ? result.reason.message
+        : String(result.reason)
+      : String(result.reason);
+  }
+  return '';
 };
