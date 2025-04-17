@@ -6,6 +6,7 @@ import { type ISqlAddressModel, type IMongoAddressModel, type IMongoUserModel } 
 import { Status } from '@/core/types/user';
 import { logger } from '@/shared/logger';
 import { userModelFactory } from '@/core/types/models/user.model.factory';
+import { BaseError } from '@/core/errors/base.error';
 
 export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userSqlRepository): UpdateUserUsecase => {
   const updateUserUsecase: UpdateUserUsecase = async ({ user, identifier, code }) => {
@@ -95,7 +96,7 @@ export const makeUpdateUserUsecase: MakeUpdateUser = (userMongoRepository, userS
       });
       throw new WarnError({
         message: 'cannot add user, check logs',
-        statusCode: 400,
+        statusCode: error instanceof BaseError ? error.statusCode : 400,
       });
     }
   };

@@ -1,6 +1,7 @@
 import { DomainEventDispatcher } from '@/core/domain/events/domain-dispacher.event';
 import { UserAggregate } from '@/core/domain/user/entities/user.aggregate';
 import { WarnError } from '@/core/errors';
+import { BaseError } from '@/core/errors/base.error';
 import { type GetUserUsecase, type MakeGetUser } from '@/core/types/user/usecases';
 import { logger } from '@/shared/logger';
 
@@ -10,10 +11,7 @@ export const makeGetUserUsecase: MakeGetUser = (userMongoRepository) => {
       const userModel = await userMongoRepository.getUserByEntityId(entityId);
 
       if (userModel?.email == null || userModel?.name == null) {
-        throw new WarnError({
-          message: 'User data is incomplete',
-          statusCode: 404,
-        });
+        throw WarnError.notFound(`User with entityId ${entityId} not found`);
       }
 
       const userAggregate = UserAggregate.fromData({
@@ -41,7 +39,7 @@ export const makeGetUserUsecase: MakeGetUser = (userMongoRepository) => {
       });
       throw new WarnError({
         message: 'cannot get user, check logs',
-        statusCode: 400,
+        statusCode: error instanceof BaseError ? error.statusCode : 400,
       });
     }
   };

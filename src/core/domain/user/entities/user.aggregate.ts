@@ -1,8 +1,8 @@
 import { UserEntity } from './user.entity';
 import { AddressEntity } from './address.entity';
 import { UserAggregateRegisteredEvent } from '../events/user-aggregate-register.event';
-import { type IMongoUserModel } from '@/core/types/models/user.model';
 import { Entity } from '../../entities/entity';
+import { type IUserAggregateModel } from '@/core/types/models/user.model';
 
 interface UserAggregateProps {
   user: UserEntity;
@@ -24,7 +24,7 @@ export class UserAggregate extends Entity<UserAggregateProps> {
     return userAggregate;
   }
 
-  public static fromData({ email, name, addresses, status, entityId, kycStatus, emailStatus }: IMongoUserModel): UserAggregate {
+  public static fromData({ email, name, addresses, status, entityId, kycStatus, emailStatus }: IUserAggregateModel): UserAggregate {
     const userEntity = UserEntity.fromData({ email, name, status, kycStatus, emailStatus });
     const addressEntities = addresses.map((address) => AddressEntity.fromData(address));
     const userAggregate = new UserAggregate({ user: userEntity, addresses: addressEntities }, entityId);
@@ -43,14 +43,16 @@ export class UserAggregate extends Entity<UserAggregateProps> {
     return [...this.props.addresses];
   }
 
-  public toValue(): IMongoUserModel {
-    const user = {
-      ...this.getUser().toValue(),
-      addresses: this.getAddresses().map((address) => address.toValue()),
-      entityId: this.entityId,
-    };
-
-    return Object.freeze(user);
+  // toValue should not return MOdel
+  public toValue(): IUserAggregateModel {
+    const user = this.getUser().toValue();
+    const addresses = this.getAddresses().map((address) => address.toValue());
+    const entityId = this.entityId;
+    return Object.freeze({
+      ...user,
+      addresses,
+      entityId,
+    });
   }
 
   public addAddress(address: AddressEntity): void {

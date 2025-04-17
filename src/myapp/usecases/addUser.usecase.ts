@@ -6,6 +6,7 @@ import { type AddUserUsecase, type MakeAddUser } from '@/core/types/user/usecase
 import { logger } from '@/shared/logger';
 import { AddressEntity } from '@/core/domain/user/entities/address.entity';
 import { userModelFactory } from '@/core/types/models/user.model.factory';
+import { BaseError } from '@/core/errors/base.error';
 
 export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepository) => {
   const addUserUsecase: AddUserUsecase = async ({ user, code }) => {
@@ -21,7 +22,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
       const userAggregate = UserAggregate.create(userEntity, addressEntities);
 
       // TBD: replace userModelFactory???
-      const userModel = userModelFactory(userAggregate.toValue());
+      const userModel = userModelFactory({ ...userAggregate.toValue() });
 
       const [mongoResult, sqlResult] = await Promise.allSettled([
         userMongoRepository.addUser(userModel),
@@ -102,7 +103,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
       });
       throw new WarnError({
         message: 'cannot add user, check logs',
-        statusCode: 400,
+        statusCode: error instanceof BaseError ? error.statusCode : 400,
       });
     }
   };

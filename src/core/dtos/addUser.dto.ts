@@ -2,10 +2,10 @@ import { ZERO } from '../types/constants';
 import { WarnError } from '../errors';
 import { type CoreDto } from './core.dto';
 import { type ValidationType } from '../types/http';
-import { type IAddressModel, type IUserModel } from '../types/models/user.model';
+import { type IAddressModel, type IUserAggregateModel } from '../types/models/user.model';
 import { Status } from '../types/user';
 
-export class AddUserDto implements CoreDto<IUserModel> {
+export class AddUserDto implements CoreDto<IUserAggregateModel> {
   public readonly name: string;
   public readonly email: string;
   public readonly addresses: IAddressModel[] = [];
@@ -14,7 +14,7 @@ export class AddUserDto implements CoreDto<IUserModel> {
     name,
     email,
     addresses,
-  }: Pick<IUserModel, 'name' | 'email'> & {
+  }: Pick<IUserAggregateModel, 'name' | 'email'> & {
     addresses: Array<{ street: string; city: string; country: string; status: Status; entityId: string }>;
   }) {
     this.name = name;
