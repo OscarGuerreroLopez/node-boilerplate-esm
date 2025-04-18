@@ -3,6 +3,7 @@ import { AddressVo } from '../../value-objects/address';
 import { AddressRegisteredEvent } from '../events/address-register.event';
 import { UserStatusVo } from '../../value-objects/status';
 import { type Status } from '@/core/types/user';
+import { type IAddressModel } from '@/core/types/models/user.model';
 
 interface AddressProps {
   street: AddressVo;
@@ -16,11 +17,11 @@ export class AddressEntity extends Entity<AddressProps> {
     super(props, entityId);
   }
 
-  public static create({ street, city, country }: { street: string; city: string; country: string }, entityId?: string): AddressEntity {
+  public static create({ street, city, country, status }: Partial<IAddressModel>, entityId?: string): AddressEntity {
     const streetVo = AddressVo.create(street);
     const cityVo = AddressVo.create(city);
     const countryVo = AddressVo.create(country);
-    const statusVo = UserStatusVo.create();
+    const statusVo = UserStatusVo.create(status);
 
     const address = new AddressEntity({ street: streetVo, city: cityVo, country: countryVo, status: statusVo }, entityId);
 
@@ -30,7 +31,7 @@ export class AddressEntity extends Entity<AddressProps> {
     return address;
   }
 
-  public static fromData(data: { street: string; city: string; country: string; status?: Status; entityId?: string }): AddressEntity {
+  public static fromData(data: Partial<IAddressModel>): AddressEntity {
     const streetVo = AddressVo.create(data.street);
     const cityVo = AddressVo.create(data.city);
     const countryVo = AddressVo.create(data.country);
@@ -94,13 +95,7 @@ export class AddressEntity extends Entity<AddressProps> {
     return this;
   }
 
-  public toValue(): Readonly<{
-    street: string;
-    city: string;
-    country: string;
-    status: Status;
-    entityId: string;
-  }> {
+  public toValue(): Readonly<IAddressModel> {
     const snapshot = {
       street: this.props.street.value,
       city: this.props.city.value,

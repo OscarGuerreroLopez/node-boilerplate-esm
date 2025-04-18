@@ -20,13 +20,17 @@ export interface IUserModel {
   name: string;
   email: string;
   status: Status;
-  addresses: IAddressModel[];
   kycStatus: Status;
   emailStatus: Status;
   entityId: string;
 }
 
-export type IMongoUserModel = IUserModel & MongoModel & { _id?: string };
-export type ISqlUserModel = IUserModel & SqlModel & { id?: string };
-export type IMongoAddressModel = IAddressModel & MongoModel & { _id?: string };
-export type ISqlAddressModel = IAddressModel & SqlModel & { id?: string };
+export interface IUserAggregateModel extends IUserModel {
+  addresses: IAddressModel[];
+}
+
+// TBD: remove & { _id?: string } and & { id?: string } from the models???
+export type IMongoUserModel = IUserAggregateModel & MongoModel;
+export type ISqlUserModel = IUserAggregateModel & SqlModel;
+export type IMongoAddressModel = IAddressModel & MongoModel;
+export type ISqlAddressModel = IAddressModel & SqlModel;

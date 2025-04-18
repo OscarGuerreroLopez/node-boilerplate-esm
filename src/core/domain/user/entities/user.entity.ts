@@ -4,6 +4,7 @@ import { NameVo } from '../../value-objects/name';
 import { Entity } from '../../entities/entity';
 import { UserStatusVo } from '../../value-objects/status';
 import { type Status } from '@/core/types/user';
+import { type IUserModel } from '@/core/types/models/user.model';
 
 interface UserProps {
   email: EmailVo;
@@ -46,14 +47,7 @@ export class UserEntity extends Entity<UserProps> {
     return user;
   }
 
-  public static fromData(data: {
-    email: string;
-    name: string;
-    status?: Status;
-    entityId?: string;
-    kycStatus?: Status;
-    emailStatus?: Status;
-  }): UserEntity {
+  public static fromData(data: Partial<IUserModel>): UserEntity {
     const emailVo = EmailVo.create(data.email);
     const nameVo = NameVo.create(data.name);
     const statusVo = UserStatusVo.create(data.status);
@@ -136,14 +130,7 @@ export class UserEntity extends Entity<UserProps> {
     return this;
   }
 
-  public toValue(): Readonly<{
-    email: string;
-    name: string;
-    status: Status;
-    kycStatus: Status;
-    emailStatus: Status;
-    entityId: string;
-  }> {
+  public toValue(): Readonly<IUserModel> {
     const snapshot = {
       email: this.props.email.value,
       name: this.props.name.value,

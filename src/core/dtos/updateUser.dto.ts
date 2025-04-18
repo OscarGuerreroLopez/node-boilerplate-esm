@@ -4,9 +4,9 @@ import { WarnError } from '../errors';
 import { type Identifier } from '../types/common';
 import { type CoreDto } from './core.dto';
 import { type ValidationType } from '../types/http';
-import { type IAddressModel, type IUserModel } from '../types/models/user.model';
+import { type IUserAggregateModel, type IAddressModel } from '../types/models/user.model';
 
-export class UpdateUserDto implements CoreDto<Partial<IUserModel>> {
+export class UpdateUserDto implements CoreDto<Partial<IUserAggregateModel>> {
   public readonly identifier: Identifier;
   public readonly name?: string;
   public readonly email?: string;
@@ -15,7 +15,15 @@ export class UpdateUserDto implements CoreDto<Partial<IUserModel>> {
   public readonly kycStatus?: Status;
   public readonly emailStatus?: Status;
 
-  constructor({ identifier, name, email, addresses, status, kycStatus, emailStatus }: Partial<IUserModel> & { identifier: Identifier }) {
+  constructor({
+    identifier,
+    name,
+    email,
+    addresses,
+    status,
+    kycStatus,
+    emailStatus,
+  }: Partial<IUserAggregateModel> & { identifier: Identifier }) {
     this.identifier = identifier;
     this.name = name;
     this.email = email;

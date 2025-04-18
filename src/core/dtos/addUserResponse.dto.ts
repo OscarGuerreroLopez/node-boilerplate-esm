@@ -1,8 +1,8 @@
 import { type Status } from '@/core/types/user';
 import { type AddUserUsecaseResponse } from '../types/user/usecases';
-import { type IAddressModel, type IUserModel } from '../types/models/user.model';
+import { type IAddressModel, type IUserAggregateModel } from '../types/models/user.model';
 
-export class UserResponseDto implements IUserModel {
+export class UserResponseDto implements IUserAggregateModel {
   id?: string;
   name: string;
   email: string;
@@ -13,7 +13,7 @@ export class UserResponseDto implements IUserModel {
   entityId: string;
 
   constructor({ user, id }: AddUserUsecaseResponse) {
-    const { name, email, addresses, status, kycStatus, emailStatus, entityId } = user.toValue();
+    const { name, email, status, kycStatus, emailStatus, addresses, entityId } = user.toValue();
     this.name = name;
     this.email = email;
     this.addresses = addresses;
@@ -24,7 +24,7 @@ export class UserResponseDto implements IUserModel {
     this.entityId = entityId;
   }
 
-  public static create(userAggregate: AddUserUsecaseResponse): IUserModel {
+  public static create(userAggregate: AddUserUsecaseResponse): IUserAggregateModel {
     return new UserResponseDto(userAggregate);
   }
 }

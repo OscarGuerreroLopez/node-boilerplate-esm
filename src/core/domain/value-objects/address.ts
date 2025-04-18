@@ -3,8 +3,8 @@ import { WarnError } from '../../errors';
 import { PrimitiveValueObject } from './primitiveValueObject';
 
 export class AddressVo extends PrimitiveValueObject<string> {
-  static create(value: string): AddressVo {
-    if (value.length === 0) {
+  static create(value?: string): AddressVo {
+    if (value == null || value.length === 0) {
       throw new WarnError({
         message: 'missing address value',
         statusCode: 400,
