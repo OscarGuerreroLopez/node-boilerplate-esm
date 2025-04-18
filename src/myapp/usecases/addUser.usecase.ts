@@ -21,7 +21,7 @@ export const makeAddUserUsecase: MakeAddUser = (userMongoRepository, userSqlRepo
 
       updateAggregateWithDatabaseResults(userAggregate, userModel);
 
-      void dispatchDomainEvents(userAggregate);
+      dispatchDomainEvents(userAggregate);
 
       return { user: userAggregate, id: userModel._id };
     } catch (error) {
@@ -129,7 +129,7 @@ const updateAggregateWithDatabaseResults = (userAggregate: UserAggregate, userMo
   });
 };
 
-const dispatchDomainEvents = async (userAggregate: UserAggregate): Promise<void> => {
+const dispatchDomainEvents = (userAggregate: UserAggregate): void => {
   const userEntity = userAggregate.getUser();
   const addressEntities = userAggregate.getAddresses();
   const allUserAggregatedEvent = [...userAggregate.getDomainEvents()];
