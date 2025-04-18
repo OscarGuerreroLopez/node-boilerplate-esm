@@ -14,14 +14,16 @@ export const makeGetUserUsecase: MakeGetUser = (userMongoRepository) => {
         throw WarnError.notFound(`User with entityId ${entityId} not found`);
       }
 
+      const { email, name, addresses, status, entityId: userEntityId, kycStatus, emailStatus } = userModel;
+
       const userAggregate = UserAggregate.fromData({
-        email: userModel.email,
-        name: userModel.name,
-        addresses: userModel.addresses,
-        status: userModel.status,
-        entityId: userModel.entityId,
-        kycStatus: userModel.kycStatus,
-        emailStatus: userModel.emailStatus,
+        email,
+        name,
+        addresses,
+        status,
+        entityId: userEntityId,
+        kycStatus,
+        emailStatus,
       });
 
       const domainEvents = userAggregate.getDomainEvents();
