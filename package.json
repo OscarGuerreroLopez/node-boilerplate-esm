@@ -20,7 +20,7 @@
     "prisma:migrate:dev": "prisma migrate dev --name init",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
-    "release": "git pull origin main --rebase && git push --follow-tags --force-with-lease",
+    "release": "git pull origin main --rebase && git push --follow-tags --force-with-lease --no-verify",
     "prepare": "husky",
     "pre-commit": "yarn lint",
     "pre-push": "yarn test && yarn release"
