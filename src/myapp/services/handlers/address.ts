@@ -28,6 +28,6 @@ const fakeCountryCheckerService = async (event: AddressRegisteredEvent): Promise
       } else {
         resolve(`[ADDRESS HANDLER] Country ${event.country} is all good`);
       }
-    }, 2000),
+    }, 1000),
   );
 };

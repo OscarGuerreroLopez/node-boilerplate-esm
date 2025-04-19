@@ -11,7 +11,7 @@ const logMeta = {
 };
 
 const fakeAsyncDelay = async (): Promise<void> => {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   console.log('@@@ fake await');
 };
 
