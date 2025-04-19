@@ -9,6 +9,3 @@ fi
 
 # Run tests
 yarn test || exit 1
-
-# Pull the latest changes from the remote branch
-git pull origin main --rebase || exit 1

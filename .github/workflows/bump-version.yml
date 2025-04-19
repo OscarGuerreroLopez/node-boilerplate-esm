@@ -30,7 +30,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Pull latest changes
-        run: git pull origin main --rebase
+        run: git fetch origin main && git reset --hard origin/main
 
       # Step 4: Bump the version
       - name: Bump version
