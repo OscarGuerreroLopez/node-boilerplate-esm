@@ -1,4 +1,18 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Skip the pre-push hook if the push is triggered by `yarn release`
+if [ "$HUSKY_SKIP_RELEASE" = "true" ]; then
+  echo "Skipping pre-push hook for release."
+  exit 0
+fi
+
+# Check if the version has been updated
+if git diff --cached package.json | grep '"version"'; then
+  echo "Version updated in package.json. Proceeding with push."
+else
+  echo "Error: Version in package.json has not been updated. Please update it before pushing."
+  exit 1
+fi
+
 yarn release
