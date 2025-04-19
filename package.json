@@ -21,7 +21,7 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "release": "git push --follow-tags --no-verify",
-    "prepare": "husky install",
+    "prepare": "husky",
     "pre-commit": "yarn lint",
     "pre-push": "yarn release"
   },
