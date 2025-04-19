@@ -1,6 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Skip the pre-push hook if running as part of the release process
+if [ "$SKIP_HOOKS" = "true" ]; then
+  echo "Skipping pre-push hook during release process."
+  exit 0
+fi
+
 # Run tests
 yarn test || exit 1
 
