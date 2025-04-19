@@ -40,4 +40,4 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git push --follow-tags origin main
+          git push --follow-tags --force-with-lease origin main
