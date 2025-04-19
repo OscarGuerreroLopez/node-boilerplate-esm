@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.4.0 (2025-04-19)
+
+
+### Features
+
+* bump version xx ([50142e2](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/commit/50142e22affca625a4e3e4cbe4e2c22914b1eca3))
+
 ## 1.3.0 (2025-04-19)
 
 
