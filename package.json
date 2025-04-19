@@ -22,8 +22,7 @@
     "prisma:studio": "prisma studio",
     "release": "standard-version && git push --follow-tags --no-verify",
     "prepare": "husky",
-    "pre-commit": "yarn lint && yarn test",
-    "pre-push": "yarn release"
+    "pre-commit": "yarn lint && yarn test"
   },
   "keywords": [],
   "author": "",
