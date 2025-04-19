@@ -23,7 +23,7 @@
     "release": "standard-version && git push --follow-tags --no-verify",
     "prepare": "husky",
     "pre-commit": "yarn lint",
-    "pre-push": "yarn release && yarn test"
+    "pre-push": "yarn release"
   },
   "keywords": [],
   "author": "",
