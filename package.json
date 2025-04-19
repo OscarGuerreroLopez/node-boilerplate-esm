@@ -19,7 +19,11 @@
     "prisma:format": "prisma format",
     "prisma:migrate:dev": "prisma migrate dev --name init",
     "prisma:generate": "prisma generate",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "release": "git push --follow-tags --no-verify",
+    "prepare": "husky",
+    "pre-commit": "npm run lint",
+    "pre-push": "npm run test && npm run release"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +43,8 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@types/cors": "^2",
     "@types/express": "^4",
     "@types/jest": "^29",
@@ -54,6 +60,7 @@
     "eslint-plugin-n": "^16",
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-promise": "^6",
+    "husky": "^9.1.7",
     "jest": "^29",
     "nodemon": "^3",
     "prettier": "^3",
