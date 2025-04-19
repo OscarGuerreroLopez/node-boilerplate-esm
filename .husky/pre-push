@@ -12,6 +12,3 @@ yarn test || exit 1
 
 # Pull the latest changes from the remote branch
 git pull origin main --rebase || exit 1
-
-# Push changes with --force-with-lease to handle race conditions
-git push --follow-tags --force-with-lease || exit 1
