@@ -1,4 +1,11 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn test && yarn release
+# Run tests
+yarn test || exit 1
+
+# Pull the latest changes from the remote branch
+git pull origin main --rebase || exit 1
+
+# Run the release process
+yarn release || exit 1
