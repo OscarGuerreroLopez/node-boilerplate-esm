@@ -6,6 +6,8 @@ let globalPrisma: PrismaClient | null = null;
 
 export const DbConnection = (url: string): SqlDatabase => {
   try {
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'local';
+
     const getConnection = (): PrismaClient => {
       if (globalPrisma == null) {
         const properties: Prisma.PrismaClientOptions = {
@@ -15,12 +17,14 @@ export const DbConnection = (url: string): SqlDatabase => {
             },
           },
           errorFormat: 'pretty' as Prisma.ErrorFormat,
-          log: [
-            { level: 'query', emit: 'stdout' },
-            { level: 'info', emit: 'stdout' },
-            { level: 'warn', emit: 'stdout' },
-            { level: 'error', emit: 'stdout' },
-          ],
+          log: isDevelopment
+            ? [
+                { level: 'query', emit: 'stdout' },
+                { level: 'info', emit: 'stdout' },
+                { level: 'warn', emit: 'stdout' },
+                { level: 'error', emit: 'stdout' },
+              ]
+            : [],
         };
 
         globalPrisma = new PrismaClient(properties);
