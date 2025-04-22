@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.9.0 (2025-04-22)
+
+
+### Features
+
+* change the way sql connects ([#16](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/issues/16)) ([3fd269f](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/commit/3fd269ff930689f8ad6ec3df00430749ff01a269))
+
 ## 1.8.0 (2025-04-19)
 
 
