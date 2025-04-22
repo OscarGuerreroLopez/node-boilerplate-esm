@@ -1,4 +1,5 @@
 import { type SqlDatabase } from '@/core/types/database';
+import { logger } from '@/shared/logger';
 import { PrismaClient, type Prisma } from '@prisma/client';
 
 let globalPrisma: PrismaClient | null = null;
@@ -65,7 +66,12 @@ export const DbConnection = (url: string): SqlDatabase => {
       healthCheck,
     };
   } catch (error) {
-    console.error('Failed to initialize Prisma client:', error);
-    throw new Error('Something went wrong');
+    logger.error(`Error connecting to the DB server: ${error instanceof Error ? error.message : JSON.stringify(error)}`, {
+      service: 'USER',
+      file: 'liveConnection.ts',
+      function: 'createConnection',
+      code: '',
+    });
+    throw error;
   }
 };
