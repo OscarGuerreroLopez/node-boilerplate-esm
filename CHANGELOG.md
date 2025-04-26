@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.10.0 (2025-04-26)
+
+
+### Features
+
+* change weekly ([#23](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/issues/23)) ([b3ff5e9](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/commit/b3ff5e931b3191e46aa85f1b558b552ec9fe2266))
+
 ### 1.9.6 (2025-04-26)
 
 ### 1.9.5 (2025-04-26)
