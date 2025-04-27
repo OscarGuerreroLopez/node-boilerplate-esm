@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.10.6 (2025-04-27)
+
+
+### Bug Fixes
+
+* revert change to express ([#29](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/issues/29)) ([cdc24a3](https://github.com/OscarGuerreroLopez/node-boilerplate-esm/commit/cdc24a385c2cece71174e389cf8d0d430a7a8109))
+
 ### 1.10.5 (2025-04-27)
 
 ### 1.10.4 (2025-04-27)
