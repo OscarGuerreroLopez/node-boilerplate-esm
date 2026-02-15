@@ -48,24 +48,16 @@ jobs:
       # Checkout the code as the first step.
       - checkout
       - docker/install-docker
-      - run:
-          name: Install Docker Buildx v0.17.1
-          command: |
-            mkdir -p ~/.docker/cli-plugins
-            curl -SL https://github.com/docker/buildx/releases/download/v0.17.1/buildx-v0.17.1.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
-            chmod +x ~/.docker/cli-plugins/docker-buildx
-            docker buildx version
-      - setup_remote_docker:
-          version: 24.0.5
+      - setup_remote_docker
+      - docker/install-docker-compose
       - run:
           name: Run docker-compose
           command: |
-            docker compose version
-            docker compose up -d --build
+            docker-compose up -d --build
       - run:      
           name: Run docker-compose down
           command: |
-            docker compose down --remove-orphans
+            docker-compose down --remove-orphans
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
