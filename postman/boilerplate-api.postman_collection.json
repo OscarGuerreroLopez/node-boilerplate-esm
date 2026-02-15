@@ -1,0 +1,282 @@
+{
+  "info": {
+    "_postman_id": "75a6c7b4-9930-4aa3-9e7b-3c039b2c8544",
+    "name": "Node Boilerplate API",
+    "description": "Postman collection covering the boilerplate service mounted under `/${SERVICE_NAME}/${DEFAULT_API_PREFIX}`. It includes sample payloads that satisfy the DTO validation rules documented in README.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3009",
+      "type": "string",
+      "description": "Local development server URL (`PORT` in .env)."
+    },
+    {
+      "key": "serviceName",
+      "value": "boilerplate",
+      "type": "string",
+      "description": "`SERVICE_NAME` env var."
+    },
+    {
+      "key": "apiPrefix",
+      "value": "v1",
+      "type": "string",
+      "description": "`DEFAULT_API_PREFIX` env var (omit the leading slash)."
+    },
+    {
+      "key": "apiKey",
+      "value": "SuperHardToGuessApiKey",
+      "type": "string",
+      "description": "`x-api-key` required by credentials middleware."
+    }
+  ],
+  "item": [
+    {
+      "name": "Service Meta",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/meta",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{serviceName}}", "{{apiPrefix}}", "meta"]
+        },
+        "description": "Returns deployment metadata and asserts the Mongo connection via `checkMongoDatabase`."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/meta",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{serviceName}}", "{{apiPrefix}}", "meta"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"serviceName\": \"boilerplate\",\n  \"data\": {\n    \"message\": \"OK\",\n    \"code\": \"1b4f8b50-34b5-4d23-bf44-8b0d38e2ce41\",\n    \"platform\": \"development\",\n    \"environment\": \"development\",\n    \"dbName\": \"boilerplate\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Add User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"addresses\": [\n    {\n      \"entityId\": \"addr-1\",\n      \"street\": \"123 Main St\",\n      \"city\": \"Austin\",\n      \"country\": \"US\",\n      \"status\": \"PENDING\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/add-user",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{serviceName}}", "{{apiPrefix}}", "add-user"]
+        },
+        "description": "Creates a user aggregate in Mongo + SQL. Validation mirrors `AddUserDto` (name/email required, 1-3 addresses)."
+      },
+      "response": [
+        {
+          "name": "201 Created",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"addresses\": [\n    {\n      \"entityId\": \"addr-1\",\n      \"street\": \"123 Main St\",\n      \"city\": \"Austin\",\n      \"country\": \"US\",\n      \"status\": \"PENDING\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/add-user",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{serviceName}}", "{{apiPrefix}}", "add-user"]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"serviceName\": \"boilerplate\",\n  \"data\": {\n    \"id\": \"65b5c1e7d10c3f001294fd2b\",\n    \"entityId\": \"user-demo-123\",\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane.doe@example.com\",\n    \"status\": \"PENDING\",\n    \"kycStatus\": \"PENDING\",\n    \"emailStatus\": \"PENDING\",\n    \"addresses\": [\n      {\n        \"entityId\": \"addr-1\",\n        \"street\": \"123 Main St\",\n        \"city\": \"Austin\",\n        \"country\": \"US\",\n        \"status\": \"PENDING\"\n      }\n    ],\n    \"code\": \"1b4f8b50-34b5-4d23-bf44-8b0d38e2ce41\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/{{entityId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{serviceName}}", "{{apiPrefix}}", "{{entityId}}"],
+          "variable": [
+            {
+              "key": "entityId",
+              "value": "user-demo-123",
+              "description": "User `entityId` path parameter."
+            }
+          ]
+        },
+        "description": "Fetches a single user aggregate by domain entityId. Response mirrors `UserResponseDto` and includes the correlation `code`."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/{{entityId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{serviceName}}", "{{apiPrefix}}", "{{entityId}}"],
+              "variable": [
+                {
+                  "key": "entityId",
+                  "value": "user-demo-123",
+                  "description": "User `entityId` path parameter."
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"serviceName\": \"boilerplate\",\n  \"data\": {\n    \"id\": \"65b5c1e7d10c3f001294fd2b\",\n    \"entityId\": \"user-demo-123\",\n    \"name\": \"Jane Doe\",\n    \"email\": \"jane.doe@example.com\",\n    \"status\": \"ACTIVE\",\n    \"kycStatus\": \"VERIFIED\",\n    \"emailStatus\": \"VERIFIED\",\n    \"addresses\": [\n      {\n        \"entityId\": \"addr-1\",\n        \"street\": \"500 Market St\",\n        \"city\": \"San Francisco\",\n        \"country\": \"US\",\n        \"status\": \"VERIFIED\"\n      }\n    ],\n    \"code\": \"1b4f8b50-34b5-4d23-bf44-8b0d38e2ce41\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update User",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"identifier\": { \"type\": \"entityId\", \"value\": \"user-demo-123\" },\n  \"name\": \"Jane D\",\n  \"email\": \"jane.d@example.com\",\n  \"addresses\": [\n    {\n      \"entityId\": \"addr-1\",\n      \"street\": \"500 Market St\",\n      \"city\": \"San Francisco\",\n      \"country\": \"US\",\n      \"status\": \"ACTIVE\"\n    }\n  ],\n  \"status\": \"ACTIVE\",\n  \"kycStatus\": \"VERIFIED\",\n  \"emailStatus\": \"VERIFIED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/update-user",
+          "host": ["{{baseUrl}}"],
+          "path": ["{{serviceName}}", "{{apiPrefix}}", "update-user"]
+        },
+        "description": "Updates a user via `UpdateUserDto`. Identifier accepts Mongo `_id` or domain `entityId`. Addresses array must contain at most 3 entries."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": { \"type\": \"entityId\", \"value\": \"user-demo-123\" },\n  \"name\": \"Jane D\",\n  \"email\": \"jane.d@example.com\",\n  \"addresses\": [\n    {\n      \"entityId\": \"addr-1\",\n      \"street\": \"500 Market St\",\n      \"city\": \"San Francisco\",\n      \"country\": \"US\",\n      \"status\": \"ACTIVE\"\n    }\n  ],\n  \"status\": \"ACTIVE\",\n  \"kycStatus\": \"VERIFIED\",\n  \"emailStatus\": \"VERIFIED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/{{serviceName}}/{{apiPrefix}}/update-user",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{serviceName}}", "{{apiPrefix}}", "update-user"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"serviceName\": \"boilerplate\",\n  \"data\": {\n    \"id\": \"65b5c1e7d10c3f001294fd2b\",\n    \"entityId\": \"user-demo-123\",\n    \"name\": \"Jane D\",\n    \"email\": \"jane.d@example.com\",\n    \"status\": \"ACTIVE\",\n    \"kycStatus\": \"VERIFIED\",\n    \"emailStatus\": \"VERIFIED\",\n    \"addresses\": [\n      {\n        \"entityId\": \"addr-1\",\n        \"street\": \"500 Market St\",\n        \"city\": \"San Francisco\",\n        \"country\": \"US\",\n        \"status\": \"ACTIVE\"\n      }\n    ],\n    \"code\": \"1b4f8b50-34b5-4d23-bf44-8b0d38e2ce41\"\n  }\n}"
+        }
+      ]
+    }
+  ]
+}
