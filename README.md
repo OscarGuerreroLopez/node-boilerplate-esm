@@ -22,29 +22,48 @@ This project is a robust and scalable boilerplate for building Node.js applicati
 
 ## Project Structure
 
-The project is organized into the following key directories:
+```text
+.
+├── src/
+│   ├── app.ts                     # Express bootstrap: middleware, routes, error handling
+│   ├── core/
+│   │   ├── config/                # Environment variable loader (`env-var`)
+│   │   ├── domain/                # DDD entities, aggregates, events, value objects
+│   │   ├── dtos/                  # Request/response DTOs with validation logic
+│   │   ├── errors/                # Typed errors (WarnError, AppError, etc.)
+│   │   └── types/                 # Shared types, constants, identifiers, status enums
+│   ├── infra/
+│   │   ├── mongo/                 # Mongo connections and health checks
+│   │   ├── mongoRepositories/     # Mongo persistence adapters (user repository)
+│   │   ├── sql/                   # SQL connection helpers / Prisma adapters
+│   │   └── sqlRepositories/       # SQL persistence adapters mirroring the Mongo API
+│   ├── myapp/
+│   │   ├── presentation/          # Express controller + route registration
+│   │   ├── services/              # Integrations (DB checks, fake KYC/Mail/Geo services)
+│   │   └── usecases/              # Application service layer (add/get/update user)
+│   ├── shared/
+│   │   ├── helpers/               # Cross-cutting helpers (UUID maker, etc.)
+│   │   ├── logger/                # Winston logger configuration
+│   │   └── middleware/            # Logger, rate limiting, credentials, exception handling
+│   └── __tests__/                 # Jest test suites
+├── prisma/                        # Prisma schema, migrations, and SQLite dev DB
+├── script-*.ts                    # Utility scripts for creating/listing/updating resources
+├── dist/                          # Transpiled output (gitignored)
+├── coverage/                      # Jest coverage reports
+├── logs/                          # Runtime logs written by the logger middleware
+├── Dockerfile / docker-compose.yml# Containerization assets
+├── jest.config.ts / tsconfig.json # Tooling configuration
+└── package.json / yarn.lock       # Dependencies and scripts
+```
 
-*   **`src/core/`:** Contains the core domain logic, independent of any specific application or framework.
-    *   **`domain/`:** The heart of the domain-driven design (DDD) approach.
-        *   **`entities/`:** Base classes for entities and aggregates.
-        *   **`events/`:** Base classes and dispatchers for domain events.
-        *   **`user/`:** Domain-specific logic for users.
-            *   **`entities/`:** User-related entities.
-            *   **`events/`:** User-related domain events.
-            *   **`handlers/`:** Handlers for user-related events.
-        *   **`value-objects/`:** Value objects for the domain.
-    *   **`config/`**: This folder is implied and it is supposed to keep track of env variables.
-    *   **`dtos/`**: contains DTOS for input validation and also to shape responses.
-    *   **`errors/`**: global error classes.
-    *   **`types/`**: This folder is implied and it is supposed to keep the shared types, for usecases, entities, etc.
-*   **`src/myapp/`:** Contains the application-specific code.
-    *   **`usecases/`:** Application use cases.
-    * **`presentation/`**: Contains the controllers and routes.
-    * **`services/`**: Contains aux services also used in the app.
-*   **`src/infra/`**: Contains the infrastructure code.
-    * **`repositories/`**: Contains the repositories.
-    * **`mongo/`**: Contains the mongo connection.
-*   **`src/shared/`:** Contains shared utilities.
+**Layer rundown**
+
+- `src/core/` is pure domain + shared kernel code and has no Express dependencies, which keeps the domain model portable.
+- `src/myapp/` composes DTOs, use cases, and controllers specific to this service; this is where new features usually land.
+- `src/infra/` holds persistence adapters for Mongo and SQL so use cases can persist to multiple stores in parallel.
+- `src/shared/` centralizes middleware stacks (JSON parsing, rate limiting, credentials, exception handler) plus logging helpers.
+- `src/app.ts` wires Express middleware (`expressEssentials`, `LoggerMiddleware`, `expressRateLimiter`, `credentialsMiddleware`) and mounts the routes under `/${SERVICE_NAME}/${DEFAULT_API_PREFIX}` before handing off to `src/index.ts` for the actual `listen` call.
+- Non-`src` folders such as `prisma/`, `script-*.ts`, `dist/`, `coverage/`, and `logs/` support infrastructure tasks (database schema, automation, build artifacts, and diagnostics).
 
 ## Prerequisites
 
@@ -80,7 +99,7 @@ The project is organized into the following key directories:
 The following environment variables are required to run the application. You must define them in your `.env` file:
 
 *   **`PORT`:** The port the application will listen on (e.g., `3000`).
-*   **`DEFAULT_API_PREFIX`:** The prefix for the API routes (e.g., `/api/v1`).
+*   **`DEFAULT_API_PREFIX`:** Path segment appended after the service name (e.g., `api/v1`); omit the leading slash because the app prefixes one for you.
 *   **`NODE_ENV`:** The environment (e.g., `development`, `production`).
 *   **`PLATFORM`:** The platform where the app is running (e.g., `local`, `aws`).
 *   **`API_KEY`:** Key to use to be able to access the app.
@@ -89,6 +108,135 @@ The following environment variables are required to run the application. You mus
 *   **`MONGO_URL`:** The MongoDB connection URL (e.g., `mongodb://localhost:27017/mydatabase`).
 *   **`SERVICE_NAME`:** The name of the service (e.g., `my-user-service`).
 *   **`MONGO_DATABASE`:** The name of Db to use.
+*   **`DATABASE_URL`:** Prisma/SQL connection string used by the SQL repository layer.
+*   **`DATABASE_URL_TEST`:** Separate connection string for running the Jest/Prisma test suite.
+
+## HTTP API
+
+### Base URL & Headers
+
+- All routes are mounted under `/${SERVICE_NAME}/${DEFAULT_API_PREFIX}`. With the default `.env.example` this resolves to `/boilerplate/v1`.
+- Every request must include an `x-api-key` header that matches `API_KEY`. Requests without it are rejected by `credentialsMiddleware`.
+- Accept and send JSON (`Content-Type: application/json`). Requests are rate-limited to 25 per IP every 5 minutes by `expressRateLimiter`.
+- `LoggerMiddleware` attaches a `code` correlation ID to each request; controllers echo it back inside the response payload for tracing.
+- Successful responses follow the `SuccessResponse<T>` envelope:
+
+```json
+{
+  "serviceName": "boilerplate",
+  "data": { /* endpoint-specific payload */ }
+}
+```
+
+### Endpoints
+
+> The paths below are relative to the base URL described above.
+
+#### `GET /meta`
+
+- Returns deployment metadata and confirms Mongo connectivity by calling `checkMongoDatabase`.
+- Response body:
+
+```json
+{
+  "serviceName": "boilerplate",
+  "data": {
+    "message": "OK",
+    "code": "1b4f8b50-34b5-4d23-bf44-8b0d38e2ce41",
+    "platform": "development",
+    "environment": "development",
+    "dbName": "boilerplate"
+  }
+}
+```
+
+#### `POST /add-user`
+
+- Creates a user aggregate in both Mongo and SQL repositories.
+- Required headers: `x-api-key`.
+- Request body:
+
+```json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "addresses": [
+    {
+      "street": "123 Main St",
+      "city": "Austin",
+      "country": "US",
+      "status": "PENDING",
+      "entityId": "addr-1"
+    }
+  ]
+}
+```
+
+- Validation rules enforced by `AddUserDto`:
+  - `name` and `email` are required and trimmed.
+  - `addresses` must contain 1–3 entries; each entry defaults missing fields to empty strings and status to `PENDING`.
+- Response payload mirrors `UserResponseDto` plus the request `code`:
+
+```json
+{
+  "serviceName": "boilerplate",
+  "data": {
+    "id": "65b5c1e7d10c3f001294fd2b",
+    "entityId": "user-123",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "status": "PENDING",
+    "kycStatus": "PENDING",
+    "emailStatus": "PENDING",
+    "addresses": [
+      {
+        "entityId": "addr-1",
+        "street": "123 Main St",
+        "city": "Austin",
+        "country": "US",
+        "status": "PENDING"
+      }
+    ],
+    "code": "1b4f8b50-34b5-4d23-bf44-8b0d38e2ce41"
+  }
+}
+```
+
+#### `GET /:entityId`
+
+- Retrieves a user by `entityId`.
+- Requires the `x-api-key` header; `entityId` comes from the path segment following the base URL.
+- Response body is identical to the `POST /add-user` response and includes the correlation `code`.
+
+#### `PUT /update-user`
+
+- Updates a user by either Mongo `_id` or domain `entityId`. Both Mongo and SQL repositories are updated in parallel.
+- Request body:
+
+```json
+{
+  "identifier": { "type": "entityId", "value": "user-123" },
+  "name": "Jane D",
+  "email": "jane.d@example.com",
+  "addresses": [
+    {
+      "entityId": "addr-1",
+      "street": "500 Market St",
+      "city": "San Francisco",
+      "country": "US"
+    }
+  ],
+  "status": "ACTIVE",
+  "kycStatus": "VERIFIED",
+  "emailStatus": "VERIFIED"
+}
+```
+
+- Validation rules enforced by `UpdateUserDto`:
+  - `identifier.type` must be either `id` or `entityId`; both `type` and `value` are required.
+  - At most 3 addresses. Each address must include `street`, `city`, and `country` when present.
+  - Changing `name` or `email` automatically sets the aggregate, KYC, or email statuses to `PENDING` before persistence.
+- Response payload matches the user schema returned by `POST /add-user`.
 
 ## Running the Application
 
