@@ -10,7 +10,6 @@ version: 2.1
 orbs:
   # See the Node orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
   node: circleci/node@5.2
-  docker: circleci/docker@2.8.0
 
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
@@ -40,25 +39,6 @@ jobs:
           name: Run build
           command: yarn build
 
-  docker-job:
-    docker:
-      # replace with your preferred image
-      - image: cimg/base:stable
-    steps:
-      # Checkout the code as the first step.
-      - checkout
-      - docker/install-docker
-      - setup_remote_docker
-      - docker/install-docker-compose
-      - run:
-          name: Run docker-compose
-          command: |
-            docker-compose up -d --build
-      - run:      
-          name: Run docker-compose down
-          command: |
-            docker-compose down --remove-orphans
-
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
@@ -66,8 +46,5 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
-      - docker-job:
-          requires:
-            - build-and-test
       # For running simple node tests, you could optionally use the node/test job from the orb to replicate and replace the job above in fewer lines.
       # - node/test
