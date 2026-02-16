@@ -43,7 +43,7 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.0",
+    "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^19.8.0",
     "@types/cors": "^2",
     "@types/express": "^4",
